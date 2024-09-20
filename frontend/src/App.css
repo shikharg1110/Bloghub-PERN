@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Akaya+Telivigala&display=swap');
+
+/*  {
+     font-family: "Akaya Telivigala", system-ui;
+  font-size: 1.2rem; 
+} */
+.logo img {
+    height: 50px;
+    border-radius: 10px;
+}
+
+.password-toggle-icon {
+    position: relative;
+    top: -35px;
+    left: 1250px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 1.25rem;
+  }
+  
+  .password-toggle-icon:hover {
+    color: #343a40;
+  }
+
+  .about-img img {
+    height: 20rem;
+    width: 50rem;
+    border-radius: 10px;
+  }
+
+  .title h3 {
+    font-size: 2.2rem;
+  }
+
+  .time p {
+    font-size: 0.8rem;
+  }
+
+  .body p {
+    font-size: 1rem;
+  }
+
+.card {
+  width: 30rem;
+}
+
+.card-img-style {
+  height: 15rem;
+}
+
+  

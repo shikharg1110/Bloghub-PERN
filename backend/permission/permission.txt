@@ -1,0 +1,10 @@
+1 -> create only
+2 -> edit only
+3 -> edit only title and body
+4 -> edit only category
+5 -> edit only his own blog
+6 -> delete only
+7 -> delete his own written blog
+8 -> edit permission
+9 -> role assignment to user
+10 -> delete user account
