@@ -7,9 +7,13 @@ import { useNavigate } from "react-router-dom";
 const SignUp = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
+    }
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
     }
 
     const [fullname, setFullname] = useState("");
@@ -118,13 +122,13 @@ const SignUp = () => {
                     <div className="mb-3">
                         <label htmlFor="signupConfirmInputPassword1" className="form-label">Confirm Password</label>
                         <input 
-                            type={showPassword ? "text": "password"} 
+                            type={showConfirmPassword ? "text": "password"} 
                             className="form-control"
                             id="signupConfirmInputPassword1" 
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-                        <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                            {showPassword ? <IoEye />: <IoEyeOff />}
+                        <span onClick={toggleConfirmPasswordVisibility} className="password-toggle-icon">
+                            {showConfirmPassword ? <IoEye />: <IoEyeOff />}
                         </span>
                     </div>
                     <button onClick={(e) => handleSignUp(e)} className="btn btn-primary mb-3">Submit</button>
