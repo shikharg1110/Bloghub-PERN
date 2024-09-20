@@ -3,11 +3,18 @@ import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast, {Toaster} from 'react-hot-toast';
 
 const SignUp = () => {
     const navigate = useNavigate();
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [fullname, setFullname] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmpassword, setConfirmPassword] = useState("");
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -16,10 +23,6 @@ const SignUp = () => {
         setShowConfirmPassword(!showConfirmPassword);
     }
 
-    const [fullname, setFullname] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmpassword, setConfirmPassword] = useState("");
 
     const validateFullname = (name) => {
         const fullnameRegex = /^[a-zA-Z\s]{3,}$/;
@@ -39,23 +42,33 @@ const SignUp = () => {
     const handleSignUp = async (e) => {
         e.preventDefault();
 
+        if(fullname.length < 3) {
+            toast.error("Full name should be at least 3 characters long");
+            return;
+        }
+
         if (!validateFullname(fullname)) {
-            alert("Full name should be at least 3 characters long and contain only alphabets and spaces.");
+            toast.error("Full name should contain only alphabets and spaces");
             return;
         }
 
         if (!validateEmail(email)) {
-            alert("Please enter a valid email address.");
+            toast.error("Please enter a valid email address")
+            return;
+        }
+
+        if (password.length < 8) {
+            toast.error("Password must be at least 8 characters long");
             return;
         }
 
         if (!validatePassword(password)) {
-            alert("Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.");
+            toast.error("Password must include at least one uppercase letter, one number, and one special character");
             return;
         }
 
         if (password !== confirmpassword) {
-            alert("Passwords do not match.");
+            toast.error("Passwords do not match");
             return;
         }
 
@@ -68,29 +81,16 @@ const SignUp = () => {
                 })
                 console.log(newUser);
                 if(newUser.status === 201) {
-                    alert("Register Succeessfully");
-                    navigate('/login');
+                    toast.success("Registered Succeessfully");
+                    setTimeout(() => {
+                        navigate('/login');
+                    }, 2000);
                 }
             }
             catch(err) {
                 console.error("Error during signup: ",err);
-                alert("Not registered successfully. Please try again");
+                toast.error("Not registered successfully. Please try again");
             }
-        }
-        else if(fullname === "") {
-            alert("Full name should not be empty");
-        }
-        else if(email === "") {
-            alert("Email should not be empty");
-        }
-        else if(password === "") {
-            alert("Password should not be empty");
-        }
-        else if(confirmpassword === "") {
-            alert("Confirm Password should not be empty");
-        }
-        else if(confirmpassword !== password)    {
-            alert("Confirm Passoword and Password are not the same");
         }
     }
 
@@ -134,6 +134,7 @@ const SignUp = () => {
                     <button onClick={(e) => handleSignUp(e)} className="btn btn-primary mb-3">Submit</button>
                     <a href="/login" className="text-muted mx-4">Already have an account! Click here for login</a>
                 </form>
+                <Toaster />
             </div>
         </>
     );
