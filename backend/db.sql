@@ -61,3 +61,25 @@ CREATE TABLE role_permissions (
     FOREIGN KEY (role_id) REFERENCES roles (role_id) ON DELETE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permissions (permission_id) ON DELETE CASCADE
 );
+
+CREATE TABLE tags(
+    tag_id SERIAL PRIMARY KEY,
+    tag_name varchar(50) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    blog_id INT,
+    FOREIGN KEY (blog_id) REFERENCES blogs(blog_id)
+);
+
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON tags
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
