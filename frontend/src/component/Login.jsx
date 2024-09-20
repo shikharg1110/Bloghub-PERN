@@ -5,18 +5,21 @@ import axios from "axios";
 import { getCookie } from "../utility/cookieUtils";
 import UserContext from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import toast, {Toaster} from "react-hot-toast";
 
 const Login = () => {
     const navigate = useNavigate();
+
     const [showPassword, setShowPassword] = useState(false);
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const {setUser, setUserRole} = useContext(UserContext);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     }
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const {setUser, setUserRole} = useContext(UserContext);
 
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,12 +35,17 @@ const Login = () => {
         e.preventDefault();
 
         if (!validateEmail(email)) {
-            alert("Please enter a valid email address.");
+            toast.error("Please enter a valid email address.");
+            return;
+        }
+
+        if (password.length < 8) {
+            toast.error("Password must be at least 8 characters long");
             return;
         }
 
         if (!validatePassword(password)) {
-            alert("Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.");
+            toast.error("Password must include at least one uppercase letter, one number, and one special character.");
             return;
         }
 
@@ -50,33 +58,41 @@ const Login = () => {
                     withCredentials: true
                 })
                 if(user.status === 200) {
-                    alert("User login successfully");
+                    toast.success("User login successfully");
+
                     const sessionId = getCookie('connect.sid');
                     const userRole = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/profile`, {withCredentials: true});
                     console.log("userrole: ", userRole.data.user.role);
                     setUserRole(userRole.data.user.role);
                     setUser(sessionId);
-                    navigate('/');
+
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 2000);
                 }
             }
             catch(err) {
-                if(err.response.status === 500) {
-                    alert("user is not registered");
-                    navigate('/signup');
+                if(err.response) {
+
+                    const statusCode = err.response.status;
+                    const message = err.response.data.message;
+
+                    if(statusCode === 404) {
+                        toast.error("User not found: "+ message);
+                    }
+                    else if(statusCode === 401) {
+                        toast.error("Incorrect password: " + message);
+                    }
+                    else {
+                        toast.error(message)
+                        console.error(err);
+                    }
                 }
                 else {
-                    alert("Failed login. Please try again")
-                    console.error(err);
+                    toast.error("Network or server error. Please try again later");
                 }
             }
         }
-        else if(email === "") {
-            alert("Email should not be empty");
-        }
-        else if(password === "") {
-            alert("Password should not be empty");
-        }
-
     }
 
     return (
@@ -103,6 +119,7 @@ const Login = () => {
                     <button onClick={(e) => handleLogin(e)} className="btn btn-dark mb-3">Submit</button>
                     <a href="/signup" className="text-muted mx-4">Don't have an account! Click here for Sign Up</a>
                 </form>
+                <Toaster />
             </div>
         </>
     );

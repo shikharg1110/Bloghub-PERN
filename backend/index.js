@@ -71,13 +71,13 @@ passport.use(new LocalStrategy(
         try {
             const result = await pool.query("SELECT * FROM users WHERE email_id = $1", [email_id]);
             if(result.rows.length === 0) {
-                return done(null, false, {message: "Incorrect email"});
+                return done(null, false, {statusCode: 404, message: "Incorrect email"});
             }
             const user = result.rows[0];
             const isMatch = await bcrypt.compare(password, user.user_password);
             if(!isMatch) {
                 console.log("password mismatch");
-                return done(null, false, {message: "Incorrect Password"});
+                return done(null, false, {statusCode: 401, message: "Incorrect Password"});
             }
             return done(null, user);
         }
