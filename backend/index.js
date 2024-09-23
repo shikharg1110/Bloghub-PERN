@@ -31,6 +31,9 @@ const { createRole } = require('./routes/createRole');
 
 // Middleware
 const checkPermission = require('./middleware/checkPermission');
+const { getRoleByName } = require('./routes/getRoleByName');
+const { editRole } = require('./routes/editRole');
+const { getPermissionsByRoleId } = require('./routes/getPermissionByRoleId');
 
 const corsOption = {
     origin: 'http://localhost:5173',
@@ -224,7 +227,13 @@ app.get('/getUser', getUser);
 
 app.get('/getPermissions', getPermissions);
 
+app.get('/getPermissionsByRoleId/:id', getPermissionsByRoleId);
+
 app.post('/createRole', createRole);
+
+app.get('/getRole/:name', getRoleByName);
+
+app.post('/editRole', editRole);
 
 
 app.get("/here", getHere);

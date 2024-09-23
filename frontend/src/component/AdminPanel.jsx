@@ -52,24 +52,45 @@ const AdminPanel = () => {
     return (
         <>
         <div className="container mb-3">
-            <label htmlFor="create role" className="m-2 ms-4">Create Role</label>            
-            <button className="btn btn-dark" onClick={() => navigate('/createRole')}>Create Role</button>
-            <br />
-            <label htmlFor="Assign Role" className="m-2">Manage User</label>            
-            <button className="btn btn-dark mb-3" onClick={() => navigate('/manageUser')}>Manage User</button>
+            <div className="row">
+                <label htmlFor="createRole" className="col-2 m-2 ms-4">Create Role</label>            
+                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/createRole')}>Create Role</button>
+                <br />
+            </div>
+            <div className="row">
+                <label htmlFor="editRole" className="col-2 m-2 ms-4">Edit Role</label>            
+                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/editRole')}>Edit Role</button>
+                <br />
+            </div>
+            <div className="row">
+                <label htmlFor="Assign Role" className="col-2 m-2 ms-4">Manage User</label>            
+                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageUser')}>Manage User</button>
+            </div>
+
             <h3>Account Information: {getUser.length}</h3>
-            {
-                getUser.map((user) => (
-                    <div className="card mb-3" key={user.user_id} onClick={()=>handleUserProfile(user)} style={{cursor:'pointer'}}>
-                        <div className="card-body">
-                            <h5 className="card-title">{user.user_name}</h5>
-                            <h6 className="card-subtitle mb-2 text-body-secondary">{user.email_id}</h6>
-                            <p className="card-text">Role: {roleMap[user.role_id]}</p>
-                            <p className="card-text">User Id: {user.user_id}</p>
-                        </div>
-                    </div>
-                ))
-            }
+            
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">S.No.</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email Id</th>
+                        <th scope="col">Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {
+                    getUser.map((user) => (
+                        <tr key={user.user_id} onClick={()=> handleUserProfile(user)} style={{cursor: "pointer"}} >
+                            <th scope="row">{user.user_id}</th>
+                            <td>{user.user_name}</td>
+                            <td>{user.email_id}</td>
+                            <td>{roleMap[user.role_id]}</td>
+                        </tr>
+                    ))
+                }
+                </tbody>
+            </table>
         </div>
         </>
     )

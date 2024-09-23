@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import UserContext from "../context/UserContext";
+import { dateToShow } from "../utility/formatDate";
 
 const ViewBlog = () => {
 
@@ -53,7 +54,7 @@ const ViewBlog = () => {
                     <h3 className="fs-2">{title}</h3>
                 </div>
                 <div className="time">
-                    <p className="fs-7">Written at: {timeCreated}</p>
+                    <p className="fs-7">Written at: {dateToShow(timeCreated)}</p>
                 </div>
                 <div className="body">
                     <p className="fs-6">{body}</p>

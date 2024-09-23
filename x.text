@@ -1,0 +1,9 @@
+Permission_id and permission name
+             1 | create blog
+             2 | edit blog
+             3 | delete blog
+             4 | delete all blog
+             5 | create role
+             6 | delete role
+             7 | delete user
+             8 | edit role

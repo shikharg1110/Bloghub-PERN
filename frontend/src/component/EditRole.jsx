@@ -2,11 +2,24 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, {Toaster} from 'react-hot-toast';
 
-const CreateRole = () => {
-
+const EditRole = () => {
+    
+    const [roles, setRoles] = useState([]);
+    const [selectedRole, setSelectedRole] = useState("");
     const [permissions, setPermissions] = useState([]);
     const [checkedPermissions, setCheckedPermissions] = useState([]);
-    const [roleName, setRoleName] = useState("");
+
+    const handleRoleOption = async() => {
+        try {
+            const getroleData = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getRole`);
+            console.log("role: ", getroleData.data);
+            setRoles(getroleData.data);
+        }
+        catch(err) {
+            console.error("Error while fetching role: ", err);
+        }
+    }
+
 
     const handlePermission = async() => {
         try {
@@ -34,46 +47,57 @@ const CreateRole = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(selectedRole);
         const payload = {
-            roleName,
+            selectedRole,
             permissions: checkedPermissions
         };
 
         try {
-            const findRole = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getRole/${roleName}`);
-            if(findRole.data.rows.length > 0) {
-                toast.error("Role already exit")
-                return;
-            }
-            const response = await axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/createRole`, payload);
+            const response = await axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/editRole`, payload);
             if(response.status === 200) {
-                toast.success("Role created successfully");
-                console.log("role created: ", response.data);
+                toast.success("Role edited successfully");
+                console.log("role edited: ", response.data);
             }
             else {
-                toast.error("Error creating role");
+                toast.error("Error while editing role");
             }
         }
         catch(err) {
-            toast.error("Failed to create role");
-            console.error("Error creating role: ", err);
+            toast.error("Failed to edit role");
+            console.error("Error while editing role: ", err);
         }
     }
 
     useEffect(() => {
         handlePermission();
+        handleRoleOption();
     }, []);
 
 
     return (
         <div className="container">
-            <h1>Create Role</h1>
-            <form id="createRoleForm" onSubmit={handleSubmit}>
+            <h1>Edit Role</h1>
+            <form id="editRoleForm" onSubmit={handleSubmit}>
 
-                <div className="mb-3">
-                    <label htmlFor="roleNameInput" className="form-label">Role Name</label>
-                    <input type="text" className="form-control" id="roleNameInput" value={roleName} onChange={(e)=> setRoleName(e.target.value)}/>
+            <div className="mb-3">
+                    <label htmlFor="roleAssign" className="form-label">Role</label>
+                    <select 
+                        name="roleAssign" 
+                        id="roleAssign" 
+                        className="form-control" 
+                        value={selectedRole}
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                    >
+                        <option value="">Select Role</option>
+                        {
+                            roles.map(role => (
+                                <option key={role.role_id} value={role.role_id}>{role.role_name}</option>
+                            ))
+                        }
+                    </select>
                 </div>
+
                 <h2>Permissions: </h2>
                 <div className="mb-3">
                     {
@@ -99,11 +123,11 @@ const CreateRole = () => {
                     }
                 </div>
 
-                <button className="btn btn-dark" type="submit">Create Role</button>
+                <button className="btn btn-dark" type="submit">Edit Role</button>
             </form>
 
         </div>
     );
 }
 
-export default CreateRole;
+export default EditRole;

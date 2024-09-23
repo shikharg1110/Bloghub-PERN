@@ -15,6 +15,7 @@ import AdminPanel from './component/AdminPanel';
 import ManageUser from './component/ManageUser';
 import UserProfile from './component/UserProfile';
 import CreateRole from './component/CreateRole';
+import EditRole from './component/EditRole';
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
         <Route path='/adminPanel' element={<AdminPanel/>}></Route>
         <Route path='/manageUser' element={<ManageUser/>}></Route>
         <Route path='/createRole' element={<CreateRole/>}></Route>
+        <Route path='/editRole' element={<EditRole/>}></Route>
         <Route path='/user/:id' element={<UserProfile/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/signup' element={<SignUp/>}></Route>
