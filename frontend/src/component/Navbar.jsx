@@ -5,6 +5,7 @@ import { IoMenu } from "react-icons/io5";
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import UserContext from '../context/UserContext';
 import axios from 'axios';
+import toast, {Toaster} from 'react-hot-toast';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -20,21 +21,23 @@ const Navbar = () => {
                 withCredentials: true
             });
             if(response.status === 200) {
+                toast.success("Successfully logged out");
                 setUser(null);
                 setUserRole(null);
                 deleteCookie('connect.sid');
-                navigate('/');
-                alert("Successfully logged out");
+                setTimeout(() => {
+                    navigate('/');
+                }, 2000);
             }
         }
         catch(err) {
             if(err.response && err.response.status === 401) {
                 console.log("User is not logged in");
-                alert("User is not logged in");
+                toast.error("User is not logged in");
             }
             else {
                 console.error("Error logging out:", err);
-                alert("Failed to log out");
+                toast.error("Failed to log out");
             }
         }
     }
@@ -99,6 +102,7 @@ const Navbar = () => {
                     <li>Business</li>
                 </ul>
             </div>
+            <Toaster />
         </>
     )
 }
