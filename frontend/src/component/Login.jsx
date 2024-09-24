@@ -15,7 +15,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const {setUser, setUserRole} = useContext(UserContext);
+    const {setUser, userRole, setUserRole, setHasPermission} = useContext(UserContext);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -63,8 +63,11 @@ const Login = () => {
                     const sessionId = getCookie('connect.sid');
                     const userRole = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/profile`, {withCredentials: true});
                     console.log("userrole: ", userRole.data.user.role);
+                    // console.log("userrole info: ", userRole.data.user.id);
                     setUserRole(userRole.data.user.role);
-                    setUser(sessionId);
+                    // setUser(sessionId);
+                    setUser(userRole.data.user.id);
+                    handleRolePermission(userRole.data.user.role);
 
                     setTimeout(() => {
                         navigate('/');
@@ -92,6 +95,18 @@ const Login = () => {
                     toast.error("Network or server error. Please try again later");
                 }
             }
+        }
+    }
+
+    const handleRolePermission = async(userroleid)=>{
+        try {
+            console.log("userRole: ",userroleid);
+            const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getPermissionsByRoleId/${userroleid}`);
+            // console.log(response.data.permissions);
+            setHasPermission(response.data.permissions);
+        }
+        catch(err) {
+            console.log(err);
         }
     }
 

@@ -80,6 +80,16 @@ const SignUp = () => {
                     user_password: password
                 })
                 console.log(newUser);
+                
+                const roleAssgin = await axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/roleAssignment`, {
+                    email_id: email,
+                    role_id: 0
+                }, {
+                    withCredentials: true
+                });
+    
+                console.log("role assignment: ",roleAssgin);
+
                 if(newUser.status === 201) {
                     toast.success("Registered Succeessfully");
                     setTimeout(() => {

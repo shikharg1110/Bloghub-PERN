@@ -7,13 +7,15 @@ import { dateToShow } from "../utility/formatDate";
 
 const ViewBlog = () => {
 
-        const {userRole} = useContext(UserContext);
+        const {user, userRole, hasPermission} = useContext(UserContext);
         const navigate = useNavigate();
         const [image, setImage] = useState(null);
         const [title, setTitle] = useState("");
         const [body, setBody] = useState("");
         const [timeCreated, setTimeCreated] = useState("");
         const [blogId, setBlogId] = useState(null);
+        const [authorId, setAuthorId] = useState(null);
+
         const {id} = useParams();
         const handleViewBlog = async () => {
             try {
@@ -24,6 +26,11 @@ const ViewBlog = () => {
                 setImage(response.data[0].img);
                 setTimeCreated(response.data[0].created_at);
                 setBlogId(id);
+
+                const checkAuthor = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getUserByBlogId/${id}`);
+                console.log(checkAuthor.data.rows[0]);
+                setAuthorId(checkAuthor.data.rows[0].user_id);
+
             }
             catch(error) {
                 console.error(error);
@@ -61,13 +68,29 @@ const ViewBlog = () => {
                 </div>
                 <div>
                     {
-                        userRole === 'author' || userRole === 'admin' ?
+                        user === authorId ?
                         <>
-                        <Link to={`/editBlog/${blogId}`}>
-                            <button className='btn btn-dark me-2 mb-3'>Edit Blog</button>
-                        </Link>
-                        <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
+                            <Link to={`/editBlog/${blogId}`}>
+                                <button className='btn btn-dark me-2 mb-3'>Edit Blog</button>
+                            </Link>
+                            <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
                         </>
+                        :
+                        hasPermission.includes(2) && hasPermission.includes(3) ?
+                            <>
+                            <Link to={`/editBlog/${blogId}`}>
+                                <button className='btn btn-dark me-2 mb-3'>Edit Blog</button>
+                            </Link>
+                            <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
+                            </>
+                        :
+                        hasPermission.includes(2) ?
+                            <Link to={`/editBlog/${blogId}`}>
+                                <button className='btn btn-dark me-2 mb-3'>Edit Blog</button>
+                            </Link>
+                        :
+                        hasPermission.includes(3) ?
+                        <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
                         :
                         ""
                     }

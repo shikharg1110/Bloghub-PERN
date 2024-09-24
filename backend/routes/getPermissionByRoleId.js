@@ -5,15 +5,15 @@ const getPermissionsByRoleId = async (req, res) => {
     try {
         const {id} = req.params;
         
-        const result = await pool.query("SELECT role_id FROM user_roles WHERE user_id = $1", [id]);
+        // const result = await pool.query("SELECT role_id FROM user_roles WHERE user_id = $1", [id]);
 
-        if(result.rows.length === 0) {
-            return res.status(404).send("role not found for user");
-        }
+        // if(result.rows.length === 0) {
+        //     return res.status(404).send("role not found for user");
+        // }
 
-        const roleId = result.rows[0].role_id;
+        // const roleId = result.rows[0].role_id;
 
-        const response = await pool.query("SELECT permission_id FROM role_permissions WHERE role_id = $1", [roleId])
+        const response = await pool.query("SELECT permission_id FROM role_permissions WHERE role_id = $1", [id])
 
         if(response.rows.length === 0) {
             return res.status(404).send("Permissions not found for this role");

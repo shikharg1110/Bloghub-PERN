@@ -34,6 +34,7 @@ const checkPermission = require('./middleware/checkPermission');
 const { getRoleByName } = require('./routes/getRoleByName');
 const { editRole } = require('./routes/editRole');
 const { getPermissionsByRoleId } = require('./routes/getPermissionByRoleId');
+const { getUserByBlogId } = require('./routes/getUserByBlogId');
 
 const corsOption = {
     origin: 'http://localhost:5173',
@@ -91,8 +92,19 @@ passport.use(new LocalStrategy(
 ));
 
 // how does user info stored in the session
-passport.serializeUser((user, done) => {
-    done(null, {id: user.user_id, role: user.role_id});
+passport.serializeUser( async(user, done) => {
+    try {
+        const roleId = await pool.query("SELECT role_id FROM user_roles WHERE user_id = $1", [user.user_id]);
+
+        if(roleId.rows.length > 0)
+            done(null, {id: user.user_id, role: roleId.rows[0].role_id});
+        else
+            done(new Error("Role not found for user"), null);
+    }
+    catch(err) {
+        done(err, null);
+    }
+
 });
 
 passport.deserializeUser(async (user, done) => {
@@ -135,31 +147,38 @@ const isAuthor = (req, res, next) => {
 } 
 
 const isAuthorById = async(req, res, next) => {
-    console.log("Session: ", req.session);
+    // console.log("Session: ", req.session);
     if(req.isAuthenticated()) {
-        if(req.session.passport.user.role === 'admin') {
-            next();
-        }
-        else if(req.session.passport.user.role === 'author') {
-            const {id} = req.params;
-            console.log("blog id: ", id);
-            const userResult = await pool.query("SELECT * FROM user_blogs WHERE blog_id = $1", [id]);
-            console.log(userResult.rows);
-            console.log("user session: ", req.user);
-            if(userResult.rows[0].user_id === req.user.user_id) {
-                console.log("user_id matched");
-                next();
-            }
-            else {
-                console.log("Error in authorization of the author");
-            }
-        }
-        else {
-            console.log("user is not author");
-        }
+        const authorId = req.session.passport.user.id;
+        const blogId = req.params.id;
+        const roleId = req.session.passport.user.role;
+        // console.log("AuthorID: ",authorId);
+        // console.log("RoleID: ",roleId);
+        const authorExist = await pool.query("SELECT user_id FROM user_blogs WHERE blog_id = $1", [blogId]);
+        if(authorExist.rows[0].user_id === authorId)
+            return next();
+        next(new Error("You are not the author of this blog"));
     }
     else {
         console.log("user is not authenticated");
+    }
+}
+
+const authorOrPermission = (permissionId) => {
+
+    return async(req, res,next) => {
+        try {
+            await isAuthorById(req, res, (err) => {
+                if(!err)
+                    return next();
+
+                const permissionMiddleware = checkPermission(2);
+                return permissionMiddleware(req, res, next);
+            })
+        }
+        catch(err) {
+            res.status(403).json({message: "You are not authorised to edit the blog"});
+        }
     }
 }
 
@@ -190,10 +209,10 @@ app.get('/viewBlog/:id', viewBlog);
 app.get('/readAllBlogs', readAllBlogs);
 
 // PUT: Edit blog using blog_id
-app.put('/editBlog/:id', isAuthorById, editBlog);
+app.put('/editBlog/:id', authorOrPermission(2), editBlog);
 
 // DELETE: Delete blog using blog_id
-app.delete('/deleteBlog/:id', isAuthorById, deleteBlog);
+app.delete('/deleteBlog/:id', authorOrPermission(3), deleteBlog);
 
 
 // Signup
@@ -234,6 +253,8 @@ app.post('/createRole', createRole);
 app.get('/getRole/:name', getRoleByName);
 
 app.post('/editRole', editRole);
+
+app.get('/getUserByBlogId/:id', getUserByBlogId);
 
 
 app.get("/here", getHere);

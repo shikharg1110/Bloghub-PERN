@@ -14,7 +14,9 @@ const Navbar = () => {
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     }
 
-    const {user, setUser, userRole, setUserRole} = useContext(UserContext);
+    const {user, setUser, userRole, setUserRole, hasPermission, setHasPermission} = useContext(UserContext);
+    console.log("has permission: ", hasPermission);
+    console.log("user: ",user);
     const handleSignOut = async () => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/logout`, {
@@ -24,6 +26,7 @@ const Navbar = () => {
                 toast.success("Successfully logged out");
                 setUser(null);
                 setUserRole(null);
+                setHasPermission([]);
                 deleteCookie('connect.sid');
                 setTimeout(() => {
                     navigate('/');
@@ -56,36 +59,35 @@ const Navbar = () => {
                 </div>
                 <div>
                     {
-                        userRole === 1 ? 
+                        user === 1 ? 
                         <>
-
-                        <Link to='/adminPanel'>
-                            <button className='btn btn-dark me-2' >Admin Panel</button>
-                        </Link>
-                        <Link to='/createBlog'>
-                            <button className='btn btn-dark me-2' >Create Blog</button>
-                        </Link>
-                        <button className='btn btn-dark me-2' onClick={handleSignOut}>Sign Out</button>
+                            <Link to='/adminPanel'>
+                                <button className='btn btn-dark me-2' >Admin Panel</button>
+                            </Link>
+                            <Link to='/createBlog'>
+                                <button className='btn btn-dark me-2' >Create Blog</button>
+                            </Link>
+                            <button className='btn btn-dark me-2' onClick={handleSignOut}>Sign Out</button>
                         </>
                         :
-                        userRole === 2 ? 
+                        hasPermission.includes(1) === true ? 
                         <>
-                        <Link to='/createBlog'>
-                            <button className='btn btn-dark me-2' >Create Blog</button>
-                        </Link>
-                        <button className='btn btn-dark me-2' onClick={handleSignOut}>Sign Out</button>
+                            <Link to='/createBlog'>
+                                <button className='btn btn-dark me-2' >Create Blog</button>
+                            </Link>
+                            <button className='btn btn-dark me-2' onClick={handleSignOut}>Sign Out</button>
                         </>
                         :
-                        userRole === 5 ?
-                        <button className='btn btn-dark me-2' onClick={handleSignOut}>Sign Out</button>
+                            user !== null ?
+                            <button className='btn btn-dark me-2' onClick={handleSignOut}>Sign Out</button>
                         :
                         <>
-                        <Link to="/login">
-                            <button className='btn btn-dark me-2'>Login</button>
-                        </Link>
-                        <Link to="/signup">
-                            <button className='btn btn-dark'>Sign Up</button>
-                        </Link>
+                            <Link to="/login">
+                                <button className='btn btn-dark me-2'>Login</button>
+                            </Link>
+                            <Link to="/signup">
+                                <button className='btn btn-dark'>Sign Up</button>
+                            </Link>
                         </>
                     }
                 </div>
