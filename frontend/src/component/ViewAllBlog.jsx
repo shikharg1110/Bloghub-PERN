@@ -4,20 +4,34 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewAllBlog = () => {
     const [blogs, setBlogs] = useState([]);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
     const navigate = useNavigate();
     const location = useLocation();
     const searchQuery = location.state?.searchQuery || "";
 
 
-    const handleReadAllBlog = async ( query = '') => {
+    const handleReadAllBlog = async ( query = '', pageNumber = 1) => {
+        setLoading(true);
         try {
             const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/readAllBlogs`, {
-                params: { query }
+                params: { query, page: pageNumber, limit: 6 }
             });
-            setBlogs(response.data);
+
+            if(pageNumber === 1)
+                setBlogs(response.data);
+            else 
+                setBlogs((prevBlogs) => [...prevBlogs, ...response.data]);
+
+            setHasMore(response.data.length === 6);
+            
+            setLoading(false);
         }
         catch(err) {
             console.error("Error in reading all blogs: ",err);
+            setLoading(false);
         }
     }
 
@@ -31,33 +45,47 @@ const ViewAllBlog = () => {
         }
     }
 
+    const handleLoadMore = () => {
+        setPage((prevPage) => prevPage+1);
+    }
+
     useEffect(() => {
-        handleReadAllBlog(searchQuery);
+        // setBlogs([]);
+        setPage(1);
+        handleReadAllBlog(searchQuery, 1);
     }, [searchQuery]);
+
+    useEffect(() => {
+        if(page > 1) {
+            handleReadAllBlog(searchQuery, page);
+        }
+    }, [page]);
 
     return (
         <>
-            <div className="container mb-3">
-                <div className="row gap-3 mx-auto">
-
-
-            {
-                blogs.map((blog, index) => (
-                    
-                    <div className="card col-4" style={{width: "22rem"}} key={index} onClick={() => handleReadBlog(blog)}>
-                        <img src={`http://localhost:5000/images/${blog.img}`} className="card-img-top mt-3 card-img-style" alt="card image"/>
-                        <div className="card-body">
-                            <h5 className="card-title">{blog.title}</h5>
-                            <p className="card-text">
-                                {(
-                                    (blog.body.length < 100) ? blog.body: (blog.body.substring(0, 100)+"...")
-                                )}
-                            </p>
+            <div className="mb-3">
+                <div className="container d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                {
+                    blogs.map((blog, index) => (    
+                        <div className="" key={index}>
+                            <div className="card" onClick={() => handleReadBlog(blog)}>
+                                <img src={`http://localhost:5000/images/${blog.img}`} className="card-img-top" alt="card image"/>
+                                <div className="card-body">
+                                    <h5 className="card-title">{blog.title}</h5>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))
-            }
+                    ))
+                }
                 </div>
+                {
+                    hasMore && (<div className="text-center mt-4">
+                    <button className="btn btn-dark" onClick={handleLoadMore} disabled={loading}>
+                        {loading ? "Loading...": "Load More"}
+                    </button>
+                    </div>
+                    )
+                }
             </div>
         </>
     );

@@ -2,13 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 import blogHubLogo from '../img/blogHubLogo.png';
 import { IoMdSearch } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import UserContext from '../context/UserContext';
 import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [searchTerm, setSearchTerm] = useState("");
     const {user, setUser, userRole, setUserRole, hasPermission, setHasPermission} = useContext(UserContext);
@@ -49,24 +50,12 @@ const Navbar = () => {
         setSearchTerm(e.target.value);
     }
 
-    // const handleSearchSubmit = (e) => {
-    //     if(e.key === 'Enter') {
-
-    //         if(searchTerm.length >= 3)
-    //             navigate('/', {state: {searchQuery: searchTerm}});
-    //         else if(searchTerm === "")
-    //             navigate('/', { state: { searchQuery: ""}});
-
-    //     } 
-    // }
-
-    useEffect(() => {
-        if(searchTerm.length > 2)
-            navigate('/', {state: { searchQuery: searchTerm }});
-        // else if(searchTerm === "")
-        else
-            navigate('/', {state: { searchQuery: ""}});
-    }, [searchTerm, navigate]);
+    const handleSearchSubmit = (e) => {
+        if(e.key === 'Enter' && searchTerm.length > 2)
+            navigate('/', {state: {searchQuery: searchTerm}});
+        else if(e.key === 'Enter' && searchTerm.length <= 2)
+            navigate('/', {state: {searchQuery: ""}});
+    }
 
     return (
         <>
@@ -84,7 +73,7 @@ const Navbar = () => {
                         placeholder='Search blogs...' 
                         value={searchTerm} 
                         onChange={handleSearch}
-                        // onKeyDown={handleSearchSubmit}
+                        onKeyDown={handleSearchSubmit}
                     />
                 </div>
                 <div className='d-flex justify-content-center align-items-center'>

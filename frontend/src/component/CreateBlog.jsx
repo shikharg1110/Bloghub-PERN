@@ -1,4 +1,6 @@
 import axios from "axios";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -116,7 +118,21 @@ const CreateBlog = () => {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="bodyInput" className="form-label">Body</label>
-                    <textarea className="form-control" id="bodyInput" rows="3" onChange={(e) => {setBody(e.target.value)}}></textarea>
+                    {/* <textarea className="form-control" id="bodyInput" rows="3" onChange={(e) => {setBody(e.target.value)}}></textarea> */}
+                    <ReactQuill 
+                        theme="snow" 
+                        value={body} 
+                        onChange={setBody}
+                        modules={{
+                            toolbar: [
+                                [{'font': []}],
+                                ['bold', 'italic', 'underline'],
+                                [{'list': "ordered"}, {'list': 'bullet'}],
+                                ['link', 'image'],
+                                ['clean']
+                            ],
+                        }}    
+                    />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="tagInput" className="form-label">Tag</label>

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import UserContext from "../context/UserContext";
 import { dateToShow } from "../utility/formatDate";
+import DOMPurify from 'dompurify';
 
 const ViewBlog = () => {
 
@@ -54,17 +55,18 @@ const ViewBlog = () => {
     return (
         <>
             <div className="container">
-                <div className="image text-center align-content-center d-flex justify-content-center mt-3">
-                    <img src={`http://localhost:5000/images/${image}`} alt="Blog Banner" className="img-fluid rounded-3 mb-2 w-50 text-center"/>
-                </div>
                 <div className="title mt-4">
                     <h3 className="fs-2">{title}</h3>
                 </div>
                 <div className="time">
                     <p className="fs-7">Written at: {dateToShow(timeCreated)}</p>
                 </div>
+                <div className="image text-center align-content-center d-flex justify-content-center mt-3">
+                    <img src={`http://localhost:5000/images/${image}`} alt="Blog Banner" className="img-fluid rounded-3 mb-2 w-50 text-center"/>
+                </div>
                 <div className="body">
-                    <p className="fs-6">{body}</p>
+                    {/* <p className="fs-6">{body}</p> */}
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(body) }} className="fs-6" />
                 </div>
                 <div>
                     {
