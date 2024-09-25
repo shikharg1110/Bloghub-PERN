@@ -63,13 +63,13 @@ const ViewAllBlog = () => {
 
     return (
         <>
-            <div className="mb-3">
-                <div className="container d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <div className="container mb-3 me-auto">
+                <div className="row d-flex justify-content-between align-items-center gap-2 flex-wrap">
                 {
                     blogs.map((blog, index) => (    
-                        <div className="" key={index}>
-                            <div className="card" onClick={() => handleReadBlog(blog)}>
-                                <img src={`http://localhost:5000/images/${blog.img}`} className="card-img-top" alt="card image"/>
+                        <div className="col-3" key={index}>
+                            <div className="card" onClick={() => handleReadBlog(blog)} style={{width:"100%"}}>
+                                <img src={`http://localhost:5000/images/${blog.img}`} className="card-img-top" alt="card image" style={{height: "200px"}}/>
                                 <div className="card-body">
                                     <h5 className="card-title">{blog.title}</h5>
                                 </div>
