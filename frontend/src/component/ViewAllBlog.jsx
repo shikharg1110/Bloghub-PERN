@@ -1,15 +1,19 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewAllBlog = () => {
     const [blogs, setBlogs] = useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
+    const searchQuery = location.state?.searchQuery || "";
 
 
-    const handleReadAllBlog = async () => {
+    const handleReadAllBlog = async ( query = '') => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/readAllBlogs`);
+            const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/readAllBlogs`, {
+                params: { query }
+            });
             setBlogs(response.data);
         }
         catch(err) {
@@ -28,8 +32,8 @@ const ViewAllBlog = () => {
     }
 
     useEffect(() => {
-        handleReadAllBlog();
-    }, []);
+        handleReadAllBlog(searchQuery);
+    }, [searchQuery]);
 
     return (
         <>

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import blogHubLogo from '../img/blogHubLogo.png';
 import { IoMdSearch } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
@@ -10,13 +10,13 @@ import toast, {Toaster} from 'react-hot-toast';
 const Navbar = () => {
     const navigate = useNavigate();
 
+    const [searchTerm, setSearchTerm] = useState("");
+    const {user, setUser, userRole, setUserRole, hasPermission, setHasPermission} = useContext(UserContext);
+
     const deleteCookie = (cookieName) => {
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     }
 
-    const {user, setUser, userRole, setUserRole, hasPermission, setHasPermission} = useContext(UserContext);
-    console.log("has permission: ", hasPermission);
-    console.log("user: ",user);
     const handleSignOut = async () => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/logout`, {
@@ -45,9 +45,32 @@ const Navbar = () => {
         }
     }
 
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    // const handleSearchSubmit = (e) => {
+    //     if(e.key === 'Enter') {
+
+    //         if(searchTerm.length >= 3)
+    //             navigate('/', {state: {searchQuery: searchTerm}});
+    //         else if(searchTerm === "")
+    //             navigate('/', { state: { searchQuery: ""}});
+
+    //     } 
+    // }
+
+    useEffect(() => {
+        if(searchTerm.length > 2)
+            navigate('/', {state: { searchQuery: searchTerm }});
+        // else if(searchTerm === "")
+        else
+            navigate('/', {state: { searchQuery: ""}});
+    }, [searchTerm, navigate]);
+
     return (
         <>
-            <header className='container d-flex justify-content-between mt-2 mb-2 gap-2'>
+            <header className='container d-flex justify-content-between mt-2 mb-2 gap-2 align-items-center'>
                 <Link to="/">
                     <div className="logo">
                         <img src={blogHubLogo} alt="BlogHub Logo"/> 
@@ -55,9 +78,16 @@ const Navbar = () => {
                 </Link>
                 <div className='d-flex align-items-center gap-2'>
                     <IoMdSearch size={30}/>
-                    <input type="text" className='form-control' />
+                    <input 
+                        type="text" 
+                        className='form-control' 
+                        placeholder='Search blogs...' 
+                        value={searchTerm} 
+                        onChange={handleSearch}
+                        // onKeyDown={handleSearchSubmit}
+                    />
                 </div>
-                <div>
+                <div className='d-flex justify-content-center align-items-center'>
                     {
                         user === 1 ? 
                         <>

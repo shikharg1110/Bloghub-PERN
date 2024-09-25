@@ -35,6 +35,8 @@ const { getRoleByName } = require('./routes/getRoleByName');
 const { editRole } = require('./routes/editRole');
 const { getPermissionsByRoleId } = require('./routes/getPermissionByRoleId');
 const { getUserByBlogId } = require('./routes/getUserByBlogId');
+const { getRoleByUserId } = require('./routes/getRoleByUserId');
+const { getUserById } = require('./routes/getUserById');
 
 const corsOption = {
     origin: 'http://localhost:5173',
@@ -244,6 +246,8 @@ app.get('/getRole', getRole);
 
 app.get('/getUser', getUser);
 
+app.get('/getUserById/:id', getUserById);
+
 app.get('/getPermissions', getPermissions);
 
 app.get('/getPermissionsByRoleId/:id', getPermissionsByRoleId);
@@ -251,6 +255,8 @@ app.get('/getPermissionsByRoleId/:id', getPermissionsByRoleId);
 app.post('/createRole', createRole);
 
 app.get('/getRole/:name', getRoleByName);
+
+app.get('/getRoleByUserId/:id', getRoleByUserId);
 
 app.post('/editRole', editRole);
 

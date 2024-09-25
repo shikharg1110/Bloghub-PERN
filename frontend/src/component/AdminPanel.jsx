@@ -6,6 +6,7 @@ const AdminPanel = () => {
 
     const [ roles, setRoles ] = useState([]);
     const [ getUser, setGetUser] = useState([]);
+    const [userRole, setUserRole] = useState({});
     const [roleMap, setRoleMap] = useState({});
 
     const handleGetUser = async() => {
@@ -18,12 +19,32 @@ const AdminPanel = () => {
             console.error("Error while fetching role: ", err);
         }
     }
+    
+    const handleGetRoleByUserId = async(userId) => {
+        try {
+            const getRoles = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getRoleByUserId/${userId}`);
+            console.log(getRoles);
+        }
+        catch(err) {
+            console.log("Error while getting roles by userId: ", err);
+        }
+    }
+
+    const handleFetchRolesForUsers = async() => {
+        const rolesMap = {};
+        const promises = getUser.map(async(user) => {
+            const roleData = await handleGetRoleByUserId(user.user_id);
+            rolesMap[user.user_id] = roleData?.role_id ? roleMap[roleData.role_id] : 'No Role';
+        });
+
+        await Promise.all(promises);
+        setUserRole(roleMap);
+    }
 
     const handleRoleOption = async() => {
         try {
             const getroleData = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getRole`);
             console.log("role: ", getroleData.data);
-            setRoles(getroleData.data);
 
             // Create roleMap for quick lookup
             const newRoleMap = getroleData.data.reduce((map, role) => {
@@ -44,9 +65,17 @@ const AdminPanel = () => {
     }
 
     useEffect(() => {
-        handleRoleOption();
-        handleGetUser();
-    }, [])
+        const fetchData = async () => {
+            await handleRoleOption();
+            await handleGetUser();
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        if(getUser.length > 0) 
+            handleFetchRolesForUsers();
+    }, [getUser, roleMap]);
 
     const navigate = useNavigate();
     return (
@@ -80,12 +109,20 @@ const AdminPanel = () => {
                 </thead>
                 <tbody>
                 {
-                    getUser.map((user) => (
-                        <tr key={user.user_id} onClick={()=> handleUserProfile(user)} style={{cursor: "pointer"}} >
+                    getUser.map((user, index) => (
+                        <tr 
+                            key={user.user_id} 
+                            // onClick={()=> handleUserProfile(user)} 
+                            // style={{cursor: "pointer"}} 
+                        >
                             <th scope="row">{user.user_id}</th>
                             <td>{user.user_name}</td>
                             <td>{user.email_id}</td>
-                            <td>{roleMap[user.role_id]}</td>
+                            <td>{userRole[user.user_id] || "Loading..."}</td>
+
+
+                            {/* <td>{roleMap[user.role_id]}</td> */}
+                            {/* <td>{() =>handleGetRoleByUserId(user.user_id)}</td> */}
                         </tr>
                     ))
                 }

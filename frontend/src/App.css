@@ -49,4 +49,8 @@
   height: 15rem;
 }
 
-  
+@media (max-width: 576px) { /* For small screens */
+  .fs-sm-custom {
+    font-size: 14px;
+  }
+}
