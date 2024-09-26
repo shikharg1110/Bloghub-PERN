@@ -101,7 +101,7 @@ const CreateRole = () => {
 
                 <button className="btn btn-dark" type="submit">Create Role</button>
             </form>
-
+            <Toaster />
         </div>
     );
 }

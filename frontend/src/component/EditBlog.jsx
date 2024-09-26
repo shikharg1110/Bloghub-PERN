@@ -1,6 +1,9 @@
 import axios from "axios";
+import ReactQuill from "react-quill";
+import 'react-quill/dist/quill.snow.css';
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast, {Toaster} from 'react-hot-toast';
 
 const EditBlog = () => {
 
@@ -29,9 +32,10 @@ const EditBlog = () => {
                 });
                 setFileName(response.data)
                 console.log(response.data); 
-                alert('Uploaded Successfully');  
+                toast.success('Uploaded Successfully');  
             } 
             catch (error) {
+                toast.error("Error in uploading image");
                 console.error("Error in uploading image: ", error);
             }
         }
@@ -51,15 +55,17 @@ const EditBlog = () => {
             .then((res) => {
                 if(res.status === 200) {
                     console.log(res);
-                    alert("Blog updated successfully");
+                    toast.success("Blog updated successfully");
                     navigate(`/viewBlog/${id}`);
                 }
             })
             .catch((err) => {
+                toast.error("Error in editing the blog");
                 console.log("Error in editing the blog: ", err);
             });
         }
         else {
+            toast.error("Image upload complete");
             console.error("image upload incomplete");
         }
     }
@@ -93,7 +99,7 @@ const EditBlog = () => {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="bodyInput" className="form-label">Body</label>
-                    <textarea 
+                    {/* <textarea 
                         className="form-control" 
                         id="bodyInput" 
                         rows="3" 
@@ -101,7 +107,21 @@ const EditBlog = () => {
                         onChange={(e) => {
                             setBody(e.target.value);
                         }}
-                    ></textarea>
+                    ></textarea> */}
+                    <ReactQuill 
+                        theme="snow"
+                        value={body}
+                        onChange={setBody}
+                        modules={{
+                            toolbar: [
+                                [{'font': []}],
+                                ['bold', 'italic', 'underline'],
+                                [{'list': "ordered"}, {'list': 'bullet'}],
+                                ['link', 'image'],
+                                ['clean']
+                            ],
+                        }}
+                    />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="tagInput" className="form-label">Tag</label>
@@ -120,6 +140,7 @@ const EditBlog = () => {
                     <button type="button btn btn-dark " onClick={handleUploadImage}>Upload</button>
                 </div>
                 <button className="mb-3 btn btn-dark " onClick={() => handleEditBlog()}>Edit Blog</button>
+                <Toaster />
             </div>
         </>
     );  

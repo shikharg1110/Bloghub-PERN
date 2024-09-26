@@ -3,6 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, {Toaster} from "react-hot-toast";
 
 const CreateBlog = () => {
     const navigate = useNavigate();
@@ -31,18 +32,18 @@ const CreateBlog = () => {
                 setFileName(response.data)
                 console.log(response.data); 
                 if(response.status == 200)
-                    alert("Uploaded successfully");
+                    toast.success("Uploaded successfully");
                 else
-                    alert("Not Uploaded");
+                    toast.error("Not Uploaded");
             } 
             catch (error) {
                 if(error.response && error.response.status === 401) {
-                    alert("Log in to upload the image");
+                    toast.error("Log in to upload the image");
                     navigate('/login');
                 }
                 else {
                     console.error("Error: ", error);
-                    alert("Failed in uploading the image");
+                    toast.error("Failed in uploading the image");
                 }
             }
         }
@@ -61,39 +62,40 @@ const CreateBlog = () => {
                 })
                 .then((res) => {
                     if(res.status === 200) {
-                        alert("Blog created successfully");
+                        toast.success("Blog created successfully");
                         viewBlogbyId(res.data.rows[0].blog_id);
                     }
                     else {
-                        alert("blog does not created");
+                        toast.error("blog does not created");
                     }
                 })
                 .catch((err) => {
                     if(err.response && err.response.status === 401) {
-                        alert("Log in to create the blog");
+                        toast.error("Log in to create the blog");
                         navigate('/login');
                     }
                     else if(err.response && err.response.status === 403) {
-                        alert("You are not authorized to create the blog");
+                        toast.error("You are not authorized to create the blog");
                         navigate('/');
                     }
                     else {
                         console.log("Error in blog creation: ", err);
-                        alert('Failed in creating the blog. Try again');
+                        toast.error('Failed in creating the blog. Try again');
                     }
                 });
             }
             else if(title === "") {
-                alert("Title should not be empty");
+                toast.error("Title should not be empty");
             }
             else if(body === "") {
-                alert("Body should not be empty");
+                toast.error("Body should not be empty");
             }
             else if(tag === "") {
-                alert("Tag should not be empty");
+                toast.error("Tag should not be empty");
             }
         }
         else {
+            toast.error("image upload incomplete");
             console.error("image upload incomplete");
         }
     }
@@ -107,6 +109,7 @@ const CreateBlog = () => {
         }
         catch(err) {
             console.error("Error in loading blog", err);
+            toast.error("Error in loading blog", err);
         }
     }
     return (
@@ -143,6 +146,7 @@ const CreateBlog = () => {
                     <button type="button" onClick={handleUploadImage}>Upload</button>
                 </div>
                 <button className="btn btn-dark" onClick={() => handleCreateBlog()}>Create Blog</button>
+                <Toaster />
             </div>
         </>
     );  

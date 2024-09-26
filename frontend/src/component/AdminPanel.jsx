@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import UserContext from "../context/UserContext";
+import NotAuthorised from "./NotAuthorised";
 
 const AdminPanel = () => {
 
@@ -8,6 +10,8 @@ const AdminPanel = () => {
     const [ getUser, setGetUser] = useState([]);
     const [userRole, setUserRole] = useState({});
     const [roleMap, setRoleMap] = useState({});
+
+    const {user} = useContext(UserContext);
 
     const handleGetUser = async() => {
         try {
@@ -79,6 +83,7 @@ const AdminPanel = () => {
 
     const navigate = useNavigate();
     return (
+        user === 1 ?
         <>
         <div className="container mb-3">
             <div className="row">
@@ -129,7 +134,8 @@ const AdminPanel = () => {
                 </tbody>
             </table>
         </div>
-        </>
+        </>:
+        <NotAuthorised />
     )
 }
 
