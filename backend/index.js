@@ -294,3 +294,12 @@ app.get('/test-db-connection', async (req, res) => {
         res.status(500).json({ message: 'Database connection failed', error });
     }
 });
+
+app.get('/checkBackend', async(req, res) => {
+    try {
+        res.status(200).json({message: "Connected"});
+    }
+    catch(err) {
+        res.status(500).json({message: "not connected", err});
+    }
+})
