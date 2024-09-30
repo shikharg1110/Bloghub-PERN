@@ -289,13 +289,6 @@ app.get('/checkBackend', async(req, res) => {
     }
 })
 
-
-const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, () => {
-    console.log(`Server started at PORT ${PORT}`);
-})
-
 app.get('/test-db-connection', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()'); // Get the current timestamp
@@ -304,4 +297,11 @@ app.get('/test-db-connection', async (req, res) => {
         res.status(500).json({ message: 'Database connection failed', error });
     }
 });
+
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+    console.log(`Server started at PORT ${PORT}`);
+})
+
 
