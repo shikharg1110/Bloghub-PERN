@@ -42,7 +42,7 @@ const { editTag } = require('./routes/editTag');
 const { deleteTagById } = require('./routes/deleteTagById');
 
 const corsOption = {
-    origin: ['https://bloghub-pern.vercel.app/', 'http://localhost:5173'],
+    origin: ['https://bloghub-pern.vercel.app', 'http://localhost:5173'],
     credentials: true,
     optionSuccessStatus: 200
 }
