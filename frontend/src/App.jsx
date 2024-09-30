@@ -16,6 +16,7 @@ import ManageUser from './component/ManageUser';
 import UserProfile from './component/UserProfile';
 import CreateRole from './component/CreateRole';
 import EditRole from './component/EditRole';
+import ManageTag from './component/ManageTag';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
         <Route path='/manageUser' element={<ManageUser/>}></Route>
         <Route path='/createRole' element={<CreateRole/>}></Route>
         <Route path='/editRole' element={<EditRole/>}></Route>
+        <Route path='/manageTag' element={<ManageTag/>}></Route>
         <Route path='/user/:id' element={<UserProfile/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/signup' element={<SignUp/>}></Route>

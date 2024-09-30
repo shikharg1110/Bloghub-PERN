@@ -97,8 +97,12 @@ const AdminPanel = () => {
                 <br />
             </div>
             <div className="row">
-                <label htmlFor="Assign Role" className="col-2 m-2 ms-4">Manage User</label>            
+                <label htmlFor="manageUser" className="col-2 m-2 ms-4">Manage User</label>            
                 <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageUser')}>Manage User</button>
+            </div>
+            <div className="row">
+                <label htmlFor="manageTag" className="col-2 m-2 ms-4">Manage Tag</label>            
+                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageTag')}>Manage Tag</button>
             </div>
 
             <h3>Account Information: {getUser.length}</h3>

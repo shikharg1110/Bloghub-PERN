@@ -27,16 +27,19 @@ const { getRole } = require('./routes/getRole');
 const { getUser } = require('./routes/getUser');
 const { getPermissions} = require('./routes/getPermissions');
 const { createRole } = require('./routes/createRole');
-
-
-// Middleware
-const checkPermission = require('./middleware/checkPermission');
 const { getRoleByName } = require('./routes/getRoleByName');
 const { editRole } = require('./routes/editRole');
 const { getPermissionsByRoleId } = require('./routes/getPermissionByRoleId');
 const { getUserByBlogId } = require('./routes/getUserByBlogId');
 const { getRoleByUserId } = require('./routes/getRoleByUserId');
 const { getUserById } = require('./routes/getUserById');
+const { createTag} = require('./routes/createTag');
+
+// Middleware
+const checkPermission = require('./middleware/checkPermission');
+const { getTagsOptions } = require('./routes/getTagsOption');
+const { editTag } = require('./routes/editTag');
+const { deleteTagById } = require('./routes/deleteTagById');
 
 const corsOption = {
     origin: 'http://localhost:5173',
@@ -262,6 +265,12 @@ app.post('/editRole', editRole);
 
 app.get('/getUserByBlogId/:id', getUserByBlogId);
 
+app.post('/createTag', createTag);
+
+app.get('/getTagsOption', getTagsOptions);
+
+app.post('/editTag', editTag);
+app.post('/deleteTagById', deleteTagById);
 
 app.get("/here", getHere);
 

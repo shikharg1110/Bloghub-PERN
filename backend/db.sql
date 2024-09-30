@@ -66,7 +66,7 @@ CREATE TABLE tags(
     tag_id SERIAL PRIMARY KEY,
     tag_name varchar(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     blog_id INT,
     FOREIGN KEY (blog_id) REFERENCES blogs(blog_id)
 );
@@ -83,3 +83,9 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON tags
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
+
+CREATE TABLE tag_blog (
+    tag_id INT REFERENCES tags(tag_id),
+    blog_id INT REFERENCES blogs(blog_id),
+    PRIMARY KEY (tag_id, blog_id)
+);

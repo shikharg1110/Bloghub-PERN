@@ -1,7 +1,7 @@
 import axios from "axios";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast";
 
@@ -13,6 +13,8 @@ const CreateBlog = () => {
     const [tag, setTag] = useState("");
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
+    const [tagsOptions, setTagsOptions] = useState([]);
+    const [ selectedTag, setSelectedTag] = useState("");
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -51,11 +53,11 @@ const CreateBlog = () => {
 
     const handleCreateBlog = async() => {
         if(fileName) {
-            if(title !== "" && body !== "" && tag != "") {
+            if(title !== "" && body !== "" && selectedTag != "") {
                 await axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/createBlog`, {
                     title: title,
                     body: body,
-                    tag: tag,
+                    tag: selectedTag,
                     img: fileName
                 },{
                     withCredentials: true
@@ -112,6 +114,22 @@ const CreateBlog = () => {
             toast.error("Error in loading blog", err);
         }
     }
+
+    const getTagsOption = async() => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getTagsOption`);
+            console.log(response.data.rows[0]);
+            setTagsOptions(response.data.rows);
+        }
+        catch(err) {
+            console.log("Error in fetching tags: ", err);
+        }
+    }
+
+    useEffect(() => {
+        getTagsOption();
+    }, []);
+
     return (
         <>
             <div className="container">
@@ -138,8 +156,23 @@ const CreateBlog = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="tagInput" className="form-label">Tag</label>
-                    <input type="text" className="form-control" id="tagInput" onChange={(e) => {setTag(e.target.value)}}/>
+                    {/* <label htmlFor="tagInput" className="form-label">Tag</label>
+                    <input type="text" className="form-control" id="tagInput" onChange={(e) => {setTag(e.target.value)}}/> */}
+                    <label htmlFor="tagNameEdit" className="form-label">Select Tag</label>
+                        <select 
+                            name="tagNameEdit" 
+                            id="tagNameEdit"
+                            className="form-control"
+                            value={selectedTag}
+                            onChange={(e) => setSelectedTag(e.target.value)}
+                        >
+                            <option value="">Select Tag</option>
+                            {
+                                tagsOptions.map(tagOption => (
+                                    <option key={tagOption.tag_id} value={tagOption.tag_id}>{tagOption.tag_name}</option>
+                                ))
+                            }
+                        </select>
                 </div>
                 <div className="mb-3">
                     <input type="file" name="fileInput" id="fileInputId" onChange={handleFileChange}/>
