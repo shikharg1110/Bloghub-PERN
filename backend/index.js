@@ -280,6 +280,16 @@ app.post('/deleteTagById', deleteTagById);
 
 app.get("/here", getHere);
 
+app.get('/checkBackend', async(req, res) => {
+    try {
+        res.status(200).json({message: "Connected"});
+    }
+    catch(err) {
+        res.status(500).json({message: "not connected", err});
+    }
+})
+
+
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
@@ -295,11 +305,3 @@ app.get('/test-db-connection', async (req, res) => {
     }
 });
 
-app.get('/checkBackend', async(req, res) => {
-    try {
-        res.status(200).json({message: "Connected"});
-    }
-    catch(err) {
-        res.status(500).json({message: "not connected", err});
-    }
-})
