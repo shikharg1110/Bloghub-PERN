@@ -30,6 +30,13 @@ const ViewAllBlog = () => {
             setLoading(false);
         }
         catch(err) {
+            if (err.response && err.response.status === 500) {
+                console.log("Yes, 500 error");
+            } else if (err.response) {
+                console.error("Error response status:", err.response.status);
+            } else {
+                console.error("Error in reading all blogs:", err.message || err);
+            }
             console.error("Error in reading all blogs: ",err);
             setLoading(false);
         }
