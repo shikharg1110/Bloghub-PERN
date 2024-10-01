@@ -142,23 +142,7 @@ const isAuthenticated = (req, res, next) => {
     else {
         return res.status(401).json({message: 'Unauthorized. Please log in.'});
     }
-} 
-// middleware to check the user is authenticated and has admin
-const isAuthor = (req, res, next) => {
-    console.log("Session: ", req.session);
-    if(req.isAuthenticated()) {
-        if(req.session.passport.user.role === 'author') {
-            console.log("user is author");
-            return next();
-        }
-        else {
-            return res.status(403).json({message: "Forbidden to perform the operation"});
-        }
-    }
-    else {
-        return res.status(401).json({message: 'Unauthorized. Please log in.'});
-    }
-} 
+}
 
 const isAuthorById = async(req, res, next) => {
     // console.log("Session: ", req.session);
@@ -236,7 +220,7 @@ app.post('/signup', signUp);
 app.post('/login', login);
 
 // Getting profile of each candidate
-app.get('/profile', (req, res) => {
+app.get('/profile', isAuthenticated,(req, res) => {
     console.log("Req session in profile: ",req.session);
     if(req.isAuthenticated()) {
         const user = req.session.passport.user;
