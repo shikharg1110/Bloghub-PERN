@@ -236,7 +236,7 @@ app.post('/login', login);
 
 // Getting profile of each candidate
 app.get('/profile', (req, res) => {
-    console.log(req.session);
+    console.log("Req session in profile: ",req.session);
     if(req.isAuthenticated()) {
         const user = req.session.passport.user;
         console.log(user);

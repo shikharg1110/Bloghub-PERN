@@ -59,7 +59,7 @@ const Login = () => {
                 })
                 if(user.status === 200) {
                     toast.success("User login successfully");
-
+                    console.log("After login user details: ", user);
                     const sessionId = getCookie('connect.sid');
                     const userRole = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/profile`, {withCredentials: true});
                     console.log("userrole: ", userRole.data.user.role);
