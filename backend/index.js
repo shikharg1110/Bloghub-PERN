@@ -66,8 +66,10 @@ app.use(session( {
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
-        httpOnly: false,
+        secure: true,
+        httpOnly: true,
+        // secure: false,
+        // httpOnly: false,
         maxAge: 60*60*1000 // Cookie expiry 1 day
     }
 }))
