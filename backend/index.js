@@ -134,6 +134,7 @@ passport.deserializeUser(async (user, done) => {
 
 // middleware to check the user is authenticated
 const isAuthenticated = (req, res, next) => {
+    console.log(req);
     if(req.isAuthenticated()) {
         console.log("User: ",req.session.passport);
         console.log("user is authenticated");
