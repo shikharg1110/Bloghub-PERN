@@ -76,7 +76,8 @@ const ViewAllBlog = () => {
                     blogs.map((blog, index) => (    
                         <div className="col-3" key={index}>
                             <div className="card" onClick={() => handleReadBlog(blog)} style={{width:"100%", height:"20rem"}}>
-                                <img src={`http://localhost:5000/images/${blog.img}`} className="card-img-top" alt="card image" style={{height: "200px"}}/>
+                                <img src={`${import.meta.env.VITE_SERVER_DOMAIN}/images/${blog.img}`} className="card-img-top" alt="card image" style={{height: "200px"}}/>
+                                {/* <img src={`http://localhost:5000/images/${blog.img}`} className="card-img-top" alt="card image" style={{height: "200px"}}/> */}
                                 <div className="card-body">
                                     <h5 className="card-title">{blog.title}</h5>
                                 </div>
