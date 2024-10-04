@@ -42,7 +42,7 @@ const { editTag } = require('./routes/editTag');
 const { deleteTagById } = require('./routes/deleteTagById');
 
 const corsOption = {
-    origin: ['https://bloghub-pern.vercel.app', 'http://localhost:5173', 'https://bloghub-pern-11.onrender.com', 'https://bloghub-pern.onrender.com'],
+    origin: ['https://bloghub-pern.vercel.app', 'http://localhost:5173', 'http://localhost:5174', 'https://bloghub-pern-11.onrender.com', 'https://bloghub-pern.onrender.com'],
     credentials: true,
     optionsSuccessStatus: 200
 }
@@ -141,7 +141,7 @@ const isAuthenticated = (req, res, next) => {
         return next();
     }
     else {
-        return res.status(401).json({message: 'Unauthorized. Please log in.'});
+        return res.status(401).json({message: 'Unauthorized by isAuthenticated middleware. Please log in.'});
     }
 }
 
@@ -221,7 +221,7 @@ app.post('/signup', signUp);
 app.post('/login', login);
 
 // Getting profile of each candidate
-app.get('/profile', isAuthenticated,(req, res) => {
+app.get('/profile',(req, res) => {
     console.log("Req session in profile: ",req.session);
     if(req.isAuthenticated()) {
         const user = req.session.passport.user;
