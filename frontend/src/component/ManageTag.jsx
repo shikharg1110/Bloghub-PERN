@@ -9,6 +9,7 @@ const ManageTag = () => {
     const [ tagsOptions, setTagsOptions] = useState([]);
     const [ selectedTag, setSelectedTag] = useState("");
     const [ renameTag, setRenameTag] = useState("");
+    const [ isHover, setIsHover ] = useState(null);
 
     const handleCreateTag = async (e) => {
         e.preventDefault();
@@ -70,6 +71,45 @@ const ManageTag = () => {
         }
     }
 
+    const confirmEdit = (e) => {
+        e.preventDefault();
+        toast((t) => (
+            <span>
+                Are you sure you want to edit <b>{e.tag_name}</b> ?
+                <div style={{marginTop: "10px"}}>
+                    <button 
+                        style={{marginRight: "10px"}}
+                        onClick={async() => {
+                            await handleEditTag(e);
+                            toast.dismiss(t.id);
+                        }}
+                        className="btn btn-light"
+                    > Yes </button>
+                    <button onClick={() => toast.dismiss(t.id)} className="btn btn-light">Cancel</button>
+                </div>
+            </span>
+        ))
+    }
+
+    const confirmDelete = (e) => {
+        toast((t) => (
+            <span>
+                Are you sure you want to delete <b>{e.tag_name}</b> ?
+                <div style={{marginTop: "10px"}}>
+                    <button 
+                        style={{marginRight: "10px"}}
+                        onClick={async() => {
+                            await handleTagDelete(e);
+                            toast.dismiss(t.id);
+                        }}
+                        className="btn btn-light"
+                    > Yes </button>
+                    <button onClick={() => toast.dismiss(t.id)} className="btn btn-light">Cancel</button>
+                </div>
+            </span>
+        ))
+    }
+
     const handleTagDelete = async(e) => {
         console.log(e);
         try {
@@ -112,9 +152,12 @@ const ManageTag = () => {
                 </form>
             </div>
 
+            <br />
+            <br />
+
             <div className="mb-3">
                 <h1>Edit Tag</h1>
-                <form id="editTagForm" onSubmit={handleEditTag}>
+                <form id="editTagForm" onSubmit={confirmEdit}>
 
                     <div className="mb-3">
                         <label htmlFor="tagNameEdit" className="form-label">Select Tag</label>
@@ -132,12 +175,14 @@ const ManageTag = () => {
                                 ))
                             }
                         </select>
-                        <label htmlFor="editTagName" className="form-label">Rename</label>
+                        <label htmlFor="editTagName" className="form-label mt-2">Rename</label>
                         <input type="text" id="editTagName" className="form-control" placeholder="Write here..." value={renameTag} onChange={(e) => setRenameTag(e.target.value)}/>
                     </div>
                     <button className="btn btn-dark" type="submit">Edit Tag</button>
                 </form>
             </div>
+            <br />
+            <br />
             <div className="mb-3">
                 <h1>Tag List: {tagsOptions.length}</h1>
                 <table className="table table-striped">
@@ -160,9 +205,11 @@ const ManageTag = () => {
                                     <td>{dateToShow(tagOption.updated_at)}</td>
                                     <td 
                                         style={{cursor: "pointer"}}
-                                        onClick={() =>handleTagDelete(tagOption)}
+                                        onClick={() =>confirmDelete(tagOption)}
+                                        onMouseEnter={() => setIsHover(tagOption.tag_id)}
+                                        onMouseLeave={() => setIsHover(null)}
                                     >
-                                        <MdDelete size={25}/>
+                                        <MdDelete size={25} color={isHover === tagOption.tag_id ? 'red': 'black'} />
                                     </td>
                                 </tr>
                                 

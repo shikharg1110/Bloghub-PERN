@@ -34,24 +34,18 @@ const { getUserByBlogId } = require('./routes/getUserByBlogId');
 const { getRoleByUserId } = require('./routes/getRoleByUserId');
 const { getUserById } = require('./routes/getUserById');
 const { createTag} = require('./routes/createTag');
-
-// Middleware
-const checkPermission = require('./middleware/checkPermission');
 const { getTagsOptions } = require('./routes/getTagsOption');
 const { editTag } = require('./routes/editTag');
 const { deleteTagById } = require('./routes/deleteTagById');
+
+// Middleware
+const checkPermission = require('./middleware/checkPermission');
 
 const corsOption = {
     origin: ['https://bloghub-pern.vercel.app', 'http://localhost:5173', 'http://localhost:5174', 'https://bloghub-pern-11.onrender.com', 'https://bloghub-pern.onrender.com'],
     credentials: true,
     optionsSuccessStatus: 200
 }
-
-// const corsOption = {
-//     origin: 'http://localhost:5173',
-//     credentials: true,
-//     optionSuccessStatus: 200
-// }
 
 // middleware
 app.use(cors(corsOption));
@@ -68,8 +62,6 @@ app.use(session( {
     cookie: {
         secure: true,
         httpOnly: true,
-        // secure: false,
-        // httpOnly: false,
         maxAge: 60*60*1000 // Cookie expiry 1 day
     }
 }))
@@ -146,13 +138,10 @@ const isAuthenticated = (req, res, next) => {
 }
 
 const isAuthorById = async(req, res, next) => {
-    // console.log("Session: ", req.session);
     if(req.isAuthenticated()) {
         const authorId = req.session.passport.user.id;
         const blogId = req.params.id;
         const roleId = req.session.passport.user.role;
-        // console.log("AuthorID: ",authorId);
-        // console.log("RoleID: ",roleId);
         const authorExist = await pool.query("SELECT user_id FROM user_blogs WHERE blog_id = $1", [blogId]);
         if(authorExist.rows[0].user_id === authorId)
             return next();
@@ -267,15 +256,6 @@ app.post('/editTag', editTag);
 app.post('/deleteTagById', deleteTagById);
 
 app.get("/here", getHere);
-
-app.get('/checkBackend', async(req, res) => {
-    try {
-        res.status(200).json({message: "Connected"});
-    }
-    catch(err) {
-        res.status(500).json({message: "not connected", err});
-    }
-})
 
 app.get('/test-db-connection', async (req, res) => {
     try {
