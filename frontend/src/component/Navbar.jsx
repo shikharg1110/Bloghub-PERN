@@ -6,11 +6,14 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import UserContext from '../context/UserContext';
 import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
+import { ImCancelCircle } from "react-icons/im";
 
 const Navbar = () => {
 
     const [tagsOption, setTagsOptions] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedTag, setSelectedTag] = useState(null);
+    const [menuClick, setMenuClick] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -72,6 +75,12 @@ const Navbar = () => {
         }
     }
 
+    const handleTagSelect = (tagId) => {
+        setSelectedTag(tagId);
+        console.log("Selected tag: ",tagId);
+        navigate('/', {state: {searchQuery: "", selectedTag: tagId}})
+    }
+
     // Split the tags into the first 5 and the rest
     const firstFiveTags = tagsOption.slice(0, 5);
     const remainingTags = tagsOption.slice(5);
@@ -80,11 +89,18 @@ const Navbar = () => {
         getTagsOption();
     }, []);
 
+    // useEffect(() => {
+    //     if(location.pathname === '/')
+    //         setSelectedTag(null);
+    // }, [location]);
+
+    const isSelectedTag = (tagId) => selectedTag === tagId;
+
     return (
         <>
             <header className='container d-flex justify-content-between mt-2 mb-2 gap-2 align-items-center'>
                 <Link to="/">
-                    <div className="logo">
+                    <div className="logo" onClick={()=> setSelectedTag(null)}>
                         <img src={blogHubLogo} alt="BlogHub Logo"/> 
                     </div>
                 </Link>
@@ -139,24 +155,31 @@ const Navbar = () => {
                 <ul className='list-unstyled d-flex justify-content-between align-items-center mx-4 my-1'>
                     <li
                         style={{cursor: "pointer"}}
-                        onClick={()=> setShowDropdown(!showDropdown)}
+                        onClick={()=> {
+                            setShowDropdown(!showDropdown)
+                            setMenuClick(!menuClick);
+                        }}
+                        className='me-3'
                     >
-                        <IoMenu size={30}/>
+                        {menuClick ? <ImCancelCircle size={30}/>: <IoMenu size={30}/>}
+                        
                     </li>
                     {
                         firstFiveTags.map((tagOption) => (
                             <li
-                            className='p-1 w-25 text-center'
+                                key={tagOption.tag_id}
+                                className={`p-1 w-25 text-center ${isSelectedTag(tagOption.tag_id) ? 'bg-light text-dark': ''}`}
                                 style={{cursor: "pointer"}}
                                 onMouseEnter={(e) => {
-                                    e.target.style.backgroundColor = "white"; 
-                                    e.target.style.borderRadius = "10px"
-                                    e.target.style.color = "black";
+                                        e.target.style.backgroundColor = "white"; 
+                                        e.target.style.borderRadius = "10px"
+                                        e.target.style.color = "black";
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.target.style.backgroundColor = "transparent";
-                                    e.target.style.color = "white";
+                                        e.target.style.backgroundColor = "transparent";
+                                        e.target.style.color = "white";
                                 }}
+                                onClick={() => handleTagSelect(tagOption.tag_id)}
                             >{tagOption.tag_name}</li>
                         ))
                     }
@@ -165,17 +188,18 @@ const Navbar = () => {
                     <ul className='list-unstyled bg-dark text-light mx-4'>
                         {remainingTags.map((tagOption, index) => (
                             <li
-                            key={index}
-                            className='p-1 w-25 text-center'
+                                key={index}
+                                className={`p-1 w-25 text-center ${isSelectedTag(tagOption.tag_id) ? 'bg-light text-dark': ''}`}
+                                onClick={() => handleTagSelect(tagOption.tag_id)}
                                 style={{cursor: "pointer"}}
                                 onMouseEnter={(e) => {
-                                    e.target.style.backgroundColor = "white"; 
-                                    e.target.style.borderRadius = "10px"
-                                    e.target.style.color = "black";
+                                        e.target.style.backgroundColor = "white"; 
+                                        e.target.style.borderRadius = "10px"
+                                        e.target.style.color = "black";
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.target.style.backgroundColor = "transparent";
-                                    e.target.style.color = "white";
+                                        e.target.style.backgroundColor = "transparent";
+                                        e.target.style.color = "white";
                                 }}
                             >
                                 {tagOption.tag_name}

@@ -11,13 +11,15 @@ const ViewAllBlog = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const searchQuery = location.state?.searchQuery || "";
+    const selectedTag = location.state?.selectedTag || null;
+    console.log(selectedTag);
 
 
-    const handleReadAllBlog = async ( query = '', pageNumber = 1) => {
+    const handleReadAllBlog = async ( query = '', tag = null, pageNumber = 1) => {
         setLoading(true);
         try {
             const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/readAllBlogs`, {
-                params: { query, page: pageNumber, limit: 6 }
+                params: { query, tag, page: pageNumber, limit: 6 }
             });
 
             if(pageNumber === 1)
@@ -59,16 +61,17 @@ const ViewAllBlog = () => {
     useEffect(() => {
         // setBlogs([]);
         setPage(1);
-        handleReadAllBlog(searchQuery, 1);
-    }, [searchQuery]);
+        handleReadAllBlog(searchQuery, selectedTag, 1);
+    }, [searchQuery, selectedTag]);
 
     useEffect(() => {
         if(page > 1) {
-            handleReadAllBlog(searchQuery, page);
+            handleReadAllBlog(searchQuery,selectedTag, page);
         }
-    }, [page]);
+    }, [page, selectedTag]);
 
     return (
+        blogs.length > 0 ?
         <>
             <div className="container mb-3">
                 <div className="row d-flex justify-content-between align-items-center gap-2 flex-wrap">
@@ -96,6 +99,10 @@ const ViewAllBlog = () => {
                 }
             </div>
         </>
+        :
+        <div className="d-flex justify-content-center align-items-center">
+            <h2 className="text-muted">No blog available</h2>
+        </div>
     );
 }
 
