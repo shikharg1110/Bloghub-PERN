@@ -37,6 +37,7 @@ const { createTag} = require('./routes/createTag');
 const { getTagsOptions } = require('./routes/getTagsOption');
 const { editTag } = require('./routes/editTag');
 const { deleteTagById } = require('./routes/deleteTagById');
+const { deleteUser } = require('./routes/deleteUser');
 
 // Middleware
 const checkPermission = require('./middleware/checkPermission');
@@ -60,7 +61,7 @@ app.use(session( {
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,
+        secure: false,
         httpOnly: true,
         maxAge: 60*60*1000 // Cookie expiry 1 day
     }
@@ -254,6 +255,8 @@ app.get('/getTagsOption', getTagsOptions);
 
 app.post('/editTag', editTag);
 app.post('/deleteTagById', deleteTagById);
+
+app.post('/deleteUser', deleteUser);
 
 app.get("/here", getHere);
 

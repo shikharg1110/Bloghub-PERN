@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import UserContext from "../context/UserContext";
 import { dateToShow } from "../utility/formatDate";
 import DOMPurify from 'dompurify';
+import toast, {Toaster} from 'react-hot-toast';
 
 const ViewBlog = () => {
 
@@ -36,6 +37,25 @@ const ViewBlog = () => {
             catch(error) {
                 console.error(error);
             }
+        }
+
+        const confirmDelete = () => {
+            toast((t) => (
+                <span>
+                    Are you sure you want to delete this blog ?
+                    <div style={{marginTop: "10px"}}>
+                        <button 
+                            style={{marginRight: "10px"}}
+                            onClick={async() => {
+                                await handleDelete();
+                                toast.dismiss(t.id);
+                            }}
+                            className="btn btn-light"
+                        > Yes </button>
+                        <button onClick={() => toast.dismiss(t.id)} className="btn btn-light">Cancel</button>
+                    </div>
+                </span>
+            ))
         }
 
         const handleDelete = async() => {
@@ -75,7 +95,7 @@ const ViewBlog = () => {
                             <Link to={`/editBlog/${blogId}`}>
                                 <button className='btn btn-dark me-2 mb-3'>Edit Blog</button>
                             </Link>
-                            <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
+                            <button className='btn btn-dark me-2 mb-3' onClick={confirmDelete}>Delete Blog</button>
                         </>
                         :
                         hasPermission.includes(2) && hasPermission.includes(3) ?
@@ -83,7 +103,7 @@ const ViewBlog = () => {
                             <Link to={`/editBlog/${blogId}`}>
                                 <button className='btn btn-dark me-2 mb-3'>Edit Blog</button>
                             </Link>
-                            <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
+                            <button className='btn btn-dark me-2 mb-3' onClick={confirmDelete}>Delete Blog</button>
                             </>
                         :
                         hasPermission.includes(2) ?
@@ -92,11 +112,12 @@ const ViewBlog = () => {
                             </Link>
                         :
                         hasPermission.includes(3) ?
-                        <button className='btn btn-dark me-2 mb-3' onClick={handleDelete}>Delete Blog</button>
+                        <button className='btn btn-dark me-2 mb-3' onClick={confirmDelete}>Delete Blog</button>
                         :
                         ""
                     }
                 </div>
+                <Toaster />
             </div>
 
         </>

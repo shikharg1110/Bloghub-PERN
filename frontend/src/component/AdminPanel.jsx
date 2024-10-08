@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import UserContext from "../context/UserContext";
 import NotAuthorised from "./NotAuthorised";
+import { MdDelete } from "react-icons/md";
+import toast, {Toaster} from 'react-hot-toast';
 
 const AdminPanel = () => {
 
@@ -10,6 +12,7 @@ const AdminPanel = () => {
     const [ getUser, setGetUser] = useState([]);
     const [userRole, setUserRole] = useState({});
     const [roleMap, setRoleMap] = useState({});
+    const [isHover, setIsHover] = useState(null);
 
     const {user} = useContext(UserContext);
 
@@ -68,6 +71,45 @@ const AdminPanel = () => {
         navigate(`/user/${id}`);
     }
 
+    const confirmDelete = (e) => {
+        toast((t) => (
+            <span>
+                Are you sure you want to delete <b>{user.user_name}</b> ?
+                <div style={{marginTop: "10px"}}>
+                    <button 
+                        style={{marginRight: "10px"}}
+                        onClick={async() => {
+                            await handleUserDelete(e);
+                            toast.dismiss(t.id);
+                        }}
+                        className="btn btn-light"
+                    > Yes </button>
+                    <button onClick={() => toast.dismiss(t.id)} className="btn btn-light">Cancel</button>
+                </div>
+            </span>
+        ))
+    }
+
+    const handleUserDelete = async(user) => {
+        console.log(user);
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/deleteUser`, {
+                userId: user.user_id
+            });
+
+            if(response.status === 200) {
+                console.log(response);
+                const updatedUserOptions = getUser.filter(userOption => userOption.user_id !== user.user_id);
+                setGetUser(updatedUserOptions);
+                toast.success("User deleted Successfully");
+            }
+        }
+        catch(err) {
+            toast.error("An error occured while deleting the user");
+            console.log("An error occured while deleting the user", err);
+        }
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             await handleRoleOption();
@@ -114,6 +156,7 @@ const AdminPanel = () => {
                         <th scope="col">Name</th>
                         <th scope="col">Email Id</th>
                         <th scope="col">Role</th>
+                        <th scope="col">Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,6 +171,14 @@ const AdminPanel = () => {
                             <td>{user.user_name}</td>
                             <td>{user.email_id}</td>
                             <td>{userRole[user.user_id] || "Loading..."}</td>
+                            <td
+                                style={{cursor: "pointer"}}
+                                onClick={() =>confirmDelete(user)}
+                                onMouseEnter={() => setIsHover(user.user_id)}
+                                onMouseLeave={() => setIsHover(null)}
+                            >
+                                <MdDelete size={25} color={isHover === user.user_id ? 'red': 'black'} />
+                            </td>
 
 
                             {/* <td>{roleMap[user.role_id]}</td> */}
@@ -137,6 +188,7 @@ const AdminPanel = () => {
                 }
                 </tbody>
             </table>
+            <Toaster />
         </div>
         </>:
         <NotAuthorised />

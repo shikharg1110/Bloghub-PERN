@@ -70,6 +70,26 @@ const EditBlog = () => {
         }
     }
 
+    const confirmEdit = () => {
+        // e.preventDefault();
+        toast((t) => (
+            <span>
+                Are you sure you want to edit this blog ?
+                <div style={{marginTop: "10px"}}>
+                    <button 
+                        style={{marginRight: "10px"}}
+                        onClick={async() => {
+                            await handleEditBlog();
+                            toast.dismiss(t.id);
+                        }}
+                        className="btn btn-light"
+                    > Yes </button>
+                    <button onClick={() => toast.dismiss(t.id)} className="btn btn-light">Cancel</button>
+                </div>
+            </span>
+        ))
+    }
+
     const handleTitle = async() => {
         const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/viewBlog/${id}`);
         setTitle(response.data[0].title);
@@ -139,7 +159,7 @@ const EditBlog = () => {
                     <input type="file" name="fileInput" id="fileInputId" onChange={handleFileChange}/>
                     <button type="button btn btn-dark " onClick={handleUploadImage}>Upload</button>
                 </div>
-                <button className="mb-3 btn btn-dark " onClick={() => handleEditBlog()}>Edit Blog</button>
+                <button className="mb-3 btn btn-dark " onClick={() => confirmEdit()}>Edit Blog</button>
                 <Toaster />
             </div>
         </>
