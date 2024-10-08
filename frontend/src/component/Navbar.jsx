@@ -8,6 +8,10 @@ import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
 
 const Navbar = () => {
+
+    const [tagsOption, setTagsOptions] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -56,6 +60,25 @@ const Navbar = () => {
         else if(e.key === 'Enter' && searchTerm.length <= 2)
             navigate('/', {state: {searchQuery: ""}});
     }
+
+    const getTagsOption = async() => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getTagsOption`);
+            console.log(response.data.rows[0]);
+            setTagsOptions(response.data.rows);
+        }
+        catch(err) {
+            console.log("Error in fetching tags: ", err);
+        }
+    }
+
+    // Split the tags into the first 5 and the rest
+    const firstFiveTags = tagsOption.slice(0, 5);
+    const remainingTags = tagsOption.slice(5);
+
+    useEffect(() => {
+        getTagsOption();
+    }, []);
 
     return (
         <>
@@ -112,16 +135,54 @@ const Navbar = () => {
                 </div>
                 <Outlet />
             </header>
-            <div className="categories bg-dark text-light">
-                <ul className='list-unstyled d-flex justify-content-between mx-4'>
-                    <li><IoMenu size={30}/></li>
-                    <li>Technology</li>
-                    <li>Sports</li>
-                    <li>Entertainment</li>
-                    <li>World</li>
-                    <li>Space</li>
-                    <li>Business</li>
+            <div className="bg-dark text-light mb-2">
+                <ul className='list-unstyled d-flex justify-content-between align-items-center mx-4 my-1'>
+                    <li
+                        style={{cursor: "pointer"}}
+                        onClick={()=> setShowDropdown(!showDropdown)}
+                    >
+                        <IoMenu size={30}/>
+                    </li>
+                    {
+                        firstFiveTags.map((tagOption) => (
+                            <li
+                            className='p-1 w-25 text-center'
+                                style={{cursor: "pointer"}}
+                                onMouseEnter={(e) => {
+                                    e.target.style.backgroundColor = "white"; 
+                                    e.target.style.borderRadius = "10px"
+                                    e.target.style.color = "black";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.color = "white";
+                                }}
+                            >{tagOption.tag_name}</li>
+                        ))
+                    }
                 </ul>
+                {showDropdown && remainingTags.length > 0 && (
+                    <ul className='list-unstyled bg-dark text-light mx-4'>
+                        {remainingTags.map((tagOption, index) => (
+                            <li
+                            key={index}
+                            className='p-1 w-25 text-center'
+                                style={{cursor: "pointer"}}
+                                onMouseEnter={(e) => {
+                                    e.target.style.backgroundColor = "white"; 
+                                    e.target.style.borderRadius = "10px"
+                                    e.target.style.color = "black";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.color = "white";
+                                }}
+                            >
+                                {tagOption.tag_name}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
             <Toaster />
         </>
