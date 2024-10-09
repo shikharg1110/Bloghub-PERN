@@ -39,6 +39,7 @@ const { editTag } = require('./routes/editTag');
 const { deleteTagById } = require('./routes/deleteTagById');
 const { deleteUser } = require('./routes/deleteUser');
 const { getDeletedUser } = require('./routes/getDeletedUser');
+const { myBlog } = require('./routes/myBlog');
 
 // Middleware
 const checkPermission = require('./middleware/checkPermission');
@@ -260,6 +261,8 @@ app.post('/deleteTagById', deleteTagById);
 app.post('/deleteUser', deleteUser);
 
 app.get('/getDeletedUser', getDeletedUser);
+
+app.get('/myBlog', myBlog);
 
 app.get("/here", getHere);
 

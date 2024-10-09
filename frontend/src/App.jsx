@@ -17,6 +17,7 @@ import UserProfile from './component/UserProfile';
 import CreateRole from './component/CreateRole';
 import EditRole from './component/EditRole';
 import ManageTag from './component/ManageTag';
+import MyBlog from './component/MyBlog';
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
       <Routes>
 
         <Route path='/' element={<ViewAllBlog/>}></Route>
+        <Route path='/myBlog' element={<MyBlog/>}></Route>
         <Route path='/adminPanel' element={<AdminPanel/>}></Route>
         <Route path='/manageUser' element={<ManageUser/>}></Route>
         <Route path='/createRole' element={<CreateRole/>}></Route>

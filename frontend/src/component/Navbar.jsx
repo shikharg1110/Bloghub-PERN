@@ -58,12 +58,16 @@ const Navbar = () => {
     }
 
     const handleSearchSubmit = (e) => {
-        if(e.key === 'Enter' && searchTerm.length > 2)
-            navigate('/', {state: {searchQuery: searchTerm}});
-        else if(e.key === 'Enter' && searchTerm.length <= 2)
-            navigate('/', {state: {searchQuery: ""}});
+        if(e.key === 'Enter' && searchTerm.length > 2) {
+            const targetRoute = location.pathname === '/myBlog' ? '/myBlog' : '/';
+            navigate(targetRoute, {state: {searchQuery: searchTerm}});
+        }
+        else if(e.key === 'Enter' && searchTerm.length <= 2) {
+            const targetRoute = location.pathname === '/myBlog' ? '/myBlog' : '/';
+            navigate(targetRoute, {state: {searchQuery: ""}});
+        }
     }
-
+    
     const getTagsOption = async() => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getTagsOption`);
@@ -74,11 +78,12 @@ const Navbar = () => {
             console.log("Error in fetching tags: ", err);
         }
     }
-
+    
     const handleTagSelect = (tagId) => {
         setSelectedTag(tagId);
         console.log("Selected tag: ",tagId);
-        navigate('/', {state: {searchQuery: "", selectedTag: tagId}})
+        const targetRoute = location.pathname === '/myBlog' ? '/myBlog' : '/';
+        navigate(targetRoute, {state: {searchQuery: "", selectedTag: tagId}})
     }
 
     // Split the tags into the first 5 and the rest
@@ -88,11 +93,6 @@ const Navbar = () => {
     useEffect(() => {
         getTagsOption();
     }, []);
-
-    // useEffect(() => {
-    //     if(location.pathname === '/')
-    //         setSelectedTag(null);
-    // }, [location]);
 
     const isSelectedTag = (tagId) => selectedTag === tagId;
 
@@ -122,6 +122,9 @@ const Navbar = () => {
                             <Link to='/adminPanel'>
                                 <button className='btn btn-dark me-2' >Admin Panel</button>
                             </Link>
+                            <Link to="/myBlog">
+                                <button className='btn btn-dark me-2'>My blog</button>
+                            </Link>
                             <Link to='/createBlog'>
                                 <button className='btn btn-dark me-2' >Create Blog</button>
                             </Link>
@@ -130,6 +133,9 @@ const Navbar = () => {
                         :
                         hasPermission.includes(1) === true ? 
                         <>
+                            <Link to="/myBlog">
+                                <button className='btn btn-dark me-2'>My blog</button>
+                            </Link>
                             <Link to='/createBlog'>
                                 <button className='btn btn-dark me-2' >Create Blog</button>
                             </Link>
