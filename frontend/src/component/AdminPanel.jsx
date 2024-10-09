@@ -4,42 +4,56 @@ import axios from "axios";
 import UserContext from "../context/UserContext";
 import NotAuthorised from "./NotAuthorised";
 import { MdDelete } from "react-icons/md";
-import toast, {Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const AdminPanel = () => {
 
-    const [ roles, setRoles ] = useState([]);
-    const [ getUser, setGetUser] = useState([]);
+    const [roles, setRoles] = useState([]);
+    const [getUser, setGetUser] = useState([]);
     const [userRole, setUserRole] = useState({});
     const [roleMap, setRoleMap] = useState({});
     const [isHover, setIsHover] = useState(null);
+    const [activeUser, setActiveUser] = useState(true);
 
-    const {user} = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
-    const handleGetUser = async() => {
+    const handleGetUser = async () => {
+        setActiveUser(true);
         try {
+            console.log("get user");
             const getuserData = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getUser`);
-            console.log("all user: ", getuserData.data);
             setGetUser(getuserData.data);
         }
-        catch(err) {
+        catch (err) {
             console.error("Error while fetching role: ", err);
         }
     }
-    
-    const handleGetRoleByUserId = async(userId) => {
+
+    const handleGetDeletedUser = async() => {
+        setActiveUser(false);
+        try {
+            console.log('delete user');
+            const getDeletedUser = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getDeletedUser`);
+            setGetUser(getDeletedUser.data);
+        }
+        catch(err) {
+            console.error("Error while fetching deleted user: ", err);
+        }
+    }
+ 
+    const handleGetRoleByUserId = async (userId) => {
         try {
             const getRoles = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getRoleByUserId/${userId}`);
             console.log(getRoles);
         }
-        catch(err) {
+        catch (err) {
             console.log("Error while getting roles by userId: ", err);
         }
     }
 
-    const handleFetchRolesForUsers = async() => {
+    const handleFetchRolesForUsers = async () => {
         const rolesMap = {};
-        const promises = getUser.map(async(user) => {
+        const promises = getUser.map(async (user) => {
             const roleData = await handleGetRoleByUserId(user.user_id);
             rolesMap[user.user_id] = roleData?.role_id ? roleMap[roleData.role_id] : 'No Role';
         });
@@ -48,7 +62,7 @@ const AdminPanel = () => {
         setUserRole(roleMap);
     }
 
-    const handleRoleOption = async() => {
+    const handleRoleOption = async () => {
         try {
             const getroleData = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/getRole`);
             console.log("role: ", getroleData.data);
@@ -60,7 +74,7 @@ const AdminPanel = () => {
             }, {});
             setRoleMap(newRoleMap);
         }
-        catch(err) {
+        catch (err) {
             console.error("Error while fetching role: ", err);
         }
     }
@@ -75,10 +89,10 @@ const AdminPanel = () => {
         toast((t) => (
             <span>
                 Are you sure you want to delete <b>{user.user_name}</b> ?
-                <div style={{marginTop: "10px"}}>
-                    <button 
-                        style={{marginRight: "10px"}}
-                        onClick={async() => {
+                <div style={{ marginTop: "10px" }}>
+                    <button
+                        style={{ marginRight: "10px" }}
+                        onClick={async () => {
                             await handleUserDelete(e);
                             toast.dismiss(t.id);
                         }}
@@ -90,21 +104,21 @@ const AdminPanel = () => {
         ))
     }
 
-    const handleUserDelete = async(user) => {
+    const handleUserDelete = async (user) => {
         console.log(user);
         try {
             const response = await axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/deleteUser`, {
                 userId: user.user_id
             });
 
-            if(response.status === 200) {
+            if (response.status === 200) {
                 console.log(response);
                 const updatedUserOptions = getUser.filter(userOption => userOption.user_id !== user.user_id);
                 setGetUser(updatedUserOptions);
                 toast.success("User deleted Successfully");
             }
         }
-        catch(err) {
+        catch (err) {
             toast.error("An error occured while deleting the user");
             console.log("An error occured while deleting the user", err);
         }
@@ -119,79 +133,108 @@ const AdminPanel = () => {
     }, []);
 
     useEffect(() => {
-        if(getUser.length > 0) 
+        if (getUser.length > 0)
             handleFetchRolesForUsers();
     }, [getUser, roleMap]);
 
     const navigate = useNavigate();
     return (
         user === 1 ?
-        <>
-        <div className="container mb-3">
-            <div className="row">
-                <label htmlFor="createRole" className="col-2 m-2 ms-4">Create Role</label>            
-                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/createRole')}>Create Role</button>
-                <br />
-            </div>
-            <div className="row">
-                <label htmlFor="editRole" className="col-2 m-2 ms-4">Edit Role</label>            
-                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/editRole')}>Edit Role</button>
-                <br />
-            </div>
-            <div className="row">
-                <label htmlFor="manageUser" className="col-2 m-2 ms-4">Manage User</label>            
-                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageUser')}>Manage User</button>
-            </div>
-            <div className="row">
-                <label htmlFor="manageTag" className="col-2 m-2 ms-4">Manage Tag</label>            
-                <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageTag')}>Manage Tag</button>
-            </div>
+            <>
+                <div className="container mb-3">
+                    <div className="row">
+                        <label htmlFor="createRole" className="col-2 m-2 ms-4">Create Role</label>
+                        <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/createRole')}>Create Role</button>
+                        <br />
+                    </div>
+                    <div className="row">
+                        <label htmlFor="editRole" className="col-2 m-2 ms-4">Edit Role</label>
+                        <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/editRole')}>Edit Role</button>
+                        <br />
+                    </div>
+                    <div className="row">
+                        <label htmlFor="manageUser" className="col-2 m-2 ms-4">Manage User</label>
+                        <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageUser')}>Manage User</button>
+                    </div>
+                    <div className="row">
+                        <label htmlFor="manageTag" className="col-2 m-2 ms-4">Manage Tag</label>
+                        <button className="col-2 btn btn-dark mb-3" onClick={() => navigate('/manageTag')}>Manage Tag</button>
+                    </div>
 
-            <h3>Account Information: {getUser.length}</h3>
-            
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">S.No.</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email Id</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {
-                    getUser.map((user, index) => (
-                        <tr 
-                            key={user.user_id} 
-                            // onClick={()=> handleUserProfile(user)} 
-                            // style={{cursor: "pointer"}} 
-                        >
-                            <th scope="row">{user.user_id}</th>
-                            <td>{user.user_name}</td>
-                            <td>{user.email_id}</td>
-                            <td>{userRole[user.user_id] || "Loading..."}</td>
-                            <td
-                                style={{cursor: "pointer"}}
-                                onClick={() =>confirmDelete(user)}
-                                onMouseEnter={() => setIsHover(user.user_id)}
-                                onMouseLeave={() => setIsHover(null)}
-                            >
-                                <MdDelete size={25} color={isHover === user.user_id ? 'red': 'black'} />
-                            </td>
+                    <h3>User Information:</h3>
+                    <ul
+                        className="nav nav-pills nav-fill gap-2 bg-light rounded-5 text-dark mb-3"
+                        id="pillNav2"
+                        role="tablist">
+                        <li className="nav-item" role="presentation">
+                            <button className="nav-link active rounded-5" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true" onClick={() => handleGetUser()}>Active User</button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button className="nav-link rounded-5" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" onClick={() => handleGetDeletedUser()}>Inactive user</button>
+                        </li>
+                    </ul>
+                    
+                    <p>Total {activeUser? 'Active': 'Inactive'} User: {getUser.length}</p>
 
 
-                            {/* <td>{roleMap[user.role_id]}</td> */}
-                            {/* <td>{() =>handleGetRoleByUserId(user.user_id)}</td> */}
-                        </tr>
-                    ))
-                }
-                </tbody>
-            </table>
-            <Toaster />
-        </div>
-        </>:
-        <NotAuthorised />
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">S.No.</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email Id</th>
+                                <th scope="col">Role</th>
+
+                                {
+                                    activeUser ?
+                                    <th scope="col">Delete</th>
+                                    :
+                                    ""
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                getUser.map((user, index) => (
+                                    <tr
+                                        key={user.user_id}
+                                    // onClick={()=> handleUserProfile(user)} 
+                                    // style={{cursor: "pointer"}} 
+                                    >
+                                        <th scope="row">{user.user_id}</th>
+                                        <td>{user.user_name}</td>
+                                        <td>{user.email_id}</td>
+                                        <td>{userRole[user.user_id] || "Loading..."}</td>
+
+                                        {
+                                            activeUser ? 
+                                        
+                                            <td
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => confirmDelete(user)}
+                                            onMouseEnter={() => setIsHover(user.user_id)}
+                                            onMouseLeave={() => setIsHover(null)}
+                                            >
+                                                <MdDelete size={25} color={isHover === user.user_id ? 'red' : 'black'} />
+                                            </td>
+                                            
+                                            :
+                                        ""
+                                        }
+
+
+                                        {/* <td>{roleMap[user.role_id]}</td> */}
+                                        {/* <td>{() =>handleGetRoleByUserId(user.user_id)}</td> */}
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                    <Toaster />
+                </div>
+            </> 
+            :
+            <NotAuthorised />
     )
 }
 
