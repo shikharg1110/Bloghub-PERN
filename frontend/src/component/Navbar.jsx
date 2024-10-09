@@ -36,9 +36,7 @@ const Navbar = () => {
                 setUserRole(null);
                 setHasPermission([]);
                 deleteCookie('connect.sid');
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000);
+                navigate('/');
             }
         }
         catch(err) {

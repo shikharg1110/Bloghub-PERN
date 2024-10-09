@@ -1,9 +1,11 @@
 import axios from "axios";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast";
+import UserContext from "../context/UserContext";
+import NotAuthorised from "./NotAuthorised";
 
 const CreateBlog = () => {
     const navigate = useNavigate();
@@ -15,6 +17,8 @@ const CreateBlog = () => {
     const [fileName, setFileName] = useState(null);
     const [tagsOptions, setTagsOptions] = useState([]);
     const [ selectedTag, setSelectedTag] = useState("");
+
+    const {hasPermission} = useContext(UserContext);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -131,6 +135,7 @@ const CreateBlog = () => {
     }, []);
 
     return (
+        hasPermission.includes(1) === true ?
         <>
             <div className="container">
                 <div className="mb-3">
@@ -182,6 +187,8 @@ const CreateBlog = () => {
                 <Toaster />
             </div>
         </>
+        :
+        <NotAuthorised />
     );  
 }
 

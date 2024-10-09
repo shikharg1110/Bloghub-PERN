@@ -1,12 +1,16 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast, {Toaster} from 'react-hot-toast';
+import UserContext from "../context/UserContext";
+import NotAuthorised from "./NotAuthorised";
 
 const CreateRole = () => {
 
     const [permissions, setPermissions] = useState([]);
     const [checkedPermissions, setCheckedPermissions] = useState([]);
     const [roleName, setRoleName] = useState("");
+
+    const {user} = useContext(UserContext);
 
     const handlePermission = async() => {
         try {
@@ -66,6 +70,7 @@ const CreateRole = () => {
 
 
     return (
+        user === 1 ?
         <div className="container">
             <h1>Create Role</h1>
             <form id="createRoleForm" onSubmit={handleSubmit}>
@@ -103,6 +108,8 @@ const CreateRole = () => {
             </form>
             <Toaster />
         </div>
+        :
+        <NotAuthorised />
     );
 }
 

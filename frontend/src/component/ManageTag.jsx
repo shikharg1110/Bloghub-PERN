@@ -1,8 +1,10 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast, {Toaster} from 'react-hot-toast';
 import { dateToShow } from "../utility/formatDate";
 import { MdDelete } from "react-icons/md";
+import UserContext from "../context/UserContext";
+import NotAuthorised from "./NotAuthorised";
 
 const ManageTag = () => {
     const [ tagName, setTagName ] = useState("");
@@ -10,6 +12,8 @@ const ManageTag = () => {
     const [ selectedTag, setSelectedTag] = useState("");
     const [ renameTag, setRenameTag] = useState("");
     const [ isHover, setIsHover ] = useState(null);
+
+    const {user} = useContext(UserContext);
 
     const handleCreateTag = async (e) => {
         e.preventDefault();
@@ -138,6 +142,7 @@ const ManageTag = () => {
     }, []);
 
     return (
+        user === 1 ?
         <div className="container">
             <div className="mb-3">
                 <h1>Create Tag</h1>
@@ -223,6 +228,8 @@ const ManageTag = () => {
                 
             <Toaster />
         </div>
+        :
+        <NotAuthorised />
     );
 }
 

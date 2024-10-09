@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
+import UserContext from "../context/UserContext";
+import NotAuthorised from "./NotAuthorised";
 
 const ManageUser = () => {
 
@@ -9,6 +11,8 @@ const ManageUser = () => {
     const [ users, setUsers ] = useState([]);
     const [ selectedUser, setSelectedUser ] = useState("");
     const [ selectedRole, setSelectedRole ] = useState("");
+
+    const {user} = useContext(UserContext);
 
     const handleRoleOption = async() => {
         try {
@@ -78,6 +82,7 @@ const ManageUser = () => {
     }, [])
 
     return (
+        user === 1 ?
         <>
         <div className="container mb-3">
             <h1 className="text-center">Manage User</h1>
@@ -125,6 +130,8 @@ const ManageUser = () => {
             <Toaster />
         </div>
         </>
+        :
+        <NotAuthorised />
     )
 }
 

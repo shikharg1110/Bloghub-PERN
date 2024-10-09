@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
+import NotAuthorised from "./NotAuthorised";
 
 const MyBlog = () => {
     const [blogs, setBlogs] = useState([]);
@@ -74,6 +75,7 @@ const MyBlog = () => {
     }, [page, selectedTag]);
 
     return (
+        user !== null ?
         blogs.length > 0 ?
         <>
             <div className="container mb-3">
@@ -106,6 +108,8 @@ const MyBlog = () => {
         <div className="d-flex justify-content-center align-items-center">
             <h2 className="text-muted">No blog available</h2>
         </div>
+        :
+        <NotAuthorised />
     );
 }
 
